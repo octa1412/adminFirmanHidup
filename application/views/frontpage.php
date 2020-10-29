@@ -44,7 +44,7 @@
 	</div>
 
 	<div class="container">
-		<form onsubmit="insertdata(event)" >
+		<form class="cssform" name="property" id="property" method="POST" action="<?php echo base_url('index.php/add_video')?>" enctype="multipart/form-data">
 			<hr>
 			<table>
 				<tr>
@@ -70,9 +70,6 @@
 
 
 </body>
-<script src="<?=base_url("dist/js/jquery.min.js");?>"></script>
-<script src="<?=base_url("dist/js/popper.min.js");?>"></script>
-<script src="<?=base_url("dist/js/bootstrap.min.js");?>"></script>
 
 <script>
 

@@ -202,7 +202,7 @@
 
 						<div>
 							<!-- <video width="400" controls><source src="" type="video/webm"></video> -->
-							<img src="" width="80px;" height="100px;"> 
+							<img src="<?php echo base_url() ?>dist/img/defaults.jpg" width="auto;" height="100px;"> 
 						</div>
               	</div>
 
@@ -242,15 +242,15 @@
 							<label for="ed-nama-video" class="col-form-label">Nama Video</label>
 							<input type="text" class="form-control" id="ed-nama-video" required>
 						</div>
-						<div class="form-group" id="divupload">
+						<!-- <div class="form-group" id="divupload">
 							<label for="ed-upload">Upload Video</label><br>
 							<input type="file" accept="video/*" id="ed-upload" name="ed-upload">
-						</div>
+						</div> -->
 						
 						<div>	
-							<label for="ed-upload">Upload Video</label><br>
-							<img src="" width="80px;" height="100px;"> <br><br>
-							<button type="button" class="btn btn-secondary" id="hpsvideo">Hapus Video</button>
+							<label for="ed-upload">Video</label><br>
+							<img src="<?php echo base_url() ?>dist/img/defaults.jpg" width="auto;" height="100px;"> <br><br>
+							<!-- <button type="button" class="btn btn-secondary" id="hpsvideo">Hapus Video</button> -->
 						</div>
 
 					</form>
@@ -338,7 +338,7 @@
 							'<video width="400" controls><source src="http://localhost/bekkotemplate/upload/videos/'+ srcvideo +'" type="video/webm"></video>',
 							namavideo,
 							kategorivideo,
-								'<button class="btn btn-outline-success mt-10 mb-10" onclick=tampildata("'+ no +'") >Edit</button>'
+								'<button class="btn btn-outline-success mt-10 mb-10" onclick=tampildata("'+ no +'") >Edit</button><br>'
 							+ '<button class="btn btn-danger mt-10 mb-10" onclick=hapusdata("'+ no +'") >Delete</button>'
 							
 							]).draw(false);
@@ -371,7 +371,7 @@
 					var srcvideo = '2010282020_09_10_11_37_38.mp4';
 					//  console.log('sadas');
 					//  console.log(data.NamaVideo);
-					document.getElementById("divupload").style.display = "none";
+					// document.getElementById("divupload").style.display = "none";
 
 					$('#editmodal').modal();
 					$("#id-video").val(data.IdVideo);

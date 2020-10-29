@@ -89,7 +89,7 @@ class Video_model extends CI_Model {
 		$query = $this->db->get('video');
 		$row = $query->row();
 	
-		// unlink("./upload/videos/$row->SourceVideo");
+		unlink("./upload/videos/$row->SourceVideo");
 
 		// $this->db->delete('video');
 		$this->db->delete('video', array('IdVideo' => $id));

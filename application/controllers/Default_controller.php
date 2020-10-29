@@ -236,6 +236,27 @@ class Default_controller extends CI_Controller {
 		// echo $test['kategori'];
 		// echo $nmvideo;
 		
+		// $ffmpeg = "C:/xampp/htdocs/bekkotemplate/ffmpeg";
+		// $videofile = $FILES['video']['tmp_name'];
+		// $size = "120x90";
+
+		// $cmd ='ffmpeg -v 0 -y -i '.$in.' -vframes 1 -ss 5 -vcodec mjpeg -f rawvideo -s 286x160 -aspect 16:9 '.$out_thumb;
+		// shell_exec("ffmpeg -f image2 -r 1/1 -i images/pic%d.jpg -vf fps=25 test1.mp4");
+
+		// echo $ffmpeg;
+
+
+
+
+
+
+
+
+
+
+
+
+
 		if (isset($_FILES['video']['name']) && $_FILES['video']['name'] != '') {
 			unset($config);
 			$date = date("ymd");
@@ -257,9 +278,9 @@ class Default_controller extends CI_Controller {
 				$data['video_name']= $configVideo['file_name'];
 				$data['video_detail'] = $videoDetails;
 				
-				// echo "<pre>";
-				// print_r($data);
-				// echo "</pre>";
+				echo "<pre>";
+				print_r($data);
+				echo "</pre>";
 
 				// echo '<span class="alert alert-success">input data berhasil</span>';
 
@@ -270,16 +291,46 @@ class Default_controller extends CI_Controller {
 				$nmvideo = $videoDetails['file_name'];				
 				
 				$this->insert_video($test['kategori'], $test['namavideo'], $nmvideo );
+
+				// $command1="ffmpeg -f image2 -r 1/1 -i images/pic%d.jpg -vf fps=25 $nmvideo";
+				//command for every 1 second image change in video
+				// exec($command1);
+				// $directory_path   	= $data['video_detail']['file_path'];
+				// $directory_path_full      = $data['video_detail']['full_path'];
+				// $file_name  = $data['video_detail']['raw_name'];
+
+				// ffmpeg command to convert video
+
+				// exec("ffmpeg -i ".$directory_path_full." ".$directory_path.$file_name.".jpg"); 
+
+				// exec("ffmpeg -i ". $data['video_detail']['file_name'] ."-c:v copy frames.jpg");
+
+				// $ffmpeg = "C:/xampp/htdocs/bekkotemplate/ffmpeg";
+				// $videfile = $data['video_detail']['file_name'];
+				// $getfrom = 5;
+				// $size = "120x90";
+				// $imageFile = "C:/xampp/htdocs/bekkotemplate/upload/images/1.jpg";
+
+				// $cmd = "$ffmpeg -i $videfile -an -ss $getfrom -s $size $imageFile ";
+				// shell_exec($cmd);
+
+
+				$ffmpeg = "C:/xampp/htdocs/bekkotemplate/ffmpeg";
+				$video = "C:/xampp/htdocs/bekkotemplate/upload/videos/2010282020_09_10_11_31_42.mp4";
+				$gambar = "C:/xampp/htdocs/bekkotemplate/upload/images/1.jpg";
+				$durasi = '01:30:00';
+				// echo exec("ffmpeg -i $video -deinterlace -an -ss $durasi -t 00:00:01 -r 1 -y -vcodec mjpeg -f mjpeg $gambar 2>&1");
+
+				echo shell_exec("ffmpeg -i $video -deinterlace -an -ss $durasi -t 00:00:01 -r 1 -y -vcodec mjpeg -f mjpeg $gambar 2>&1");
+				echo '<br><br> hasil <br><br>';
+				// print_r($cmd);
 			}
 	
 		}else{
 			echo "Please select a file";
 		}
 
-		redirect($_SERVER['HTTP_REFERER']);
-
-		// echo '<br><br>';
-		// echo '<video width="320" height="240" controls> <source src="http://localhost/bekkotemplate/upload/videos/' . $configVideo['file_name'].'" type="video/mp4"> </video>';
+		// redirect($_SERVER['HTTP_REFERER']);
 
 	}
 
