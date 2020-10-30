@@ -4,16 +4,26 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<link rel="stylesheet" href="<?=base_url("dist/css/bootstrap.min.css");?>">
-	<link rel="stylesheet" href="<?=base_url("dist/css/style.css");?>">
-
 	<title>BEKKO</title>
+
+	<!-- Custom fonts for this template -->
+	<link href="<?=base_url("dist/vendor/fontawesome-free/css/all.min.css");?>" rel="stylesheet" type="text/css">
+	<link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+	<!-- Custom styles for this template -->
+	<link href="<?=base_url("dist/css/sb-admin-2.min.css");?>" rel="stylesheet">
+
+	<!-- Custom styles for this page -->
+	<link href="<?=base_url("dist/vendor/datatables/dataTables.bootstrap4.min.css");?>" rel="stylesheet">
+
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+
 </head>
 
 <body>
 
 	<div class="container-fluid">
-		<form >
+		<form onsubmit="insertdata(event)">
 			<div class="form-group">
 				<label for="kategori" class="col-form-label">Kategori</label>
 				<select class="custom-select" id="kategori" required>
@@ -43,30 +53,24 @@
 		</form>
 	</div>
 
-	<div class="container">
-		<form class="cssform" name="property" id="property" method="POST" action="<?php echo base_url('index.php/add_video')?>" enctype="multipart/form-data">
-			<hr>
-			<table>
-				<tr>
-					<!-- <label for="kategori" class="col-form-label">Kategori</label>
-					<select class="custom-select" id="kategori" name="kategori" required>
-						<option value="default">Kategori</option>   
-					</select> -->
-				</tr>
-				<tr>
-					<td><label for="nama-video" class="col-form-label">Nama Video</label></td>
-					<td><input type="text" class="form-control" id="namavideo" name="namavideo" placeholder="Nama Video..." required></td>
-				</tr>
-				<tr>
-					<td>Select Video :</td>
-					<td><input type="file" id="video" name="video" ></td>
-				</tr>
-				<tr>
-					<td> <input type="submit" id="button" name="submit" value="Submit" /></td>
-				</tr>
-			</table>
-		</form>
-	</div>
+	
+
+	<!-- Bootstrap core JavaScript-->
+	<script src="<?=base_url("dist/vendor/jquery/jquery.min.js");?>"></script>
+	<script src="<?=base_url("dist/vendor/bootstrap/js/bootstrap.bundle.min.js");?>"></script>
+
+	<!-- Core plugin JavaScript-->
+	<script src="<?=base_url("dist/vendor/jquery-easing/jquery.easing.min.js");?>"></script>
+
+	<!-- Custom scripts for all pages-->
+	<script src="<?=base_url("dist/js/sb-admin-2.min.js");?>"></script>
+
+	<!-- Page level plugins -->
+	<script src="<?=base_url("dist/vendor/datatables/jquery.dataTables.min.js");?>"></script>
+	<script src="<?=base_url("dist/vendor/datatables/dataTables.bootstrap4.min.js");?>"></script>
+
+	<!-- Page level custom scripts -->
+	<script src="<?=base_url("dist/js/demo/datatables-demo.js");?>"></script>
 
 
 </body>
@@ -104,12 +108,17 @@
 			return;
 		}
 
+		var data = new FormData(jQuery('form')[0]);
+
 		$.ajax({
 			url: "<?php echo base_url()?>index.php/coba/",
 			type: 'POST',
-			data: {kategori:inputktgr, nama:inputnama},
+			data: data,  
+			contentType: false,  
+			cache: false,  
+			processData:false,  
 			success: function (response) {
-				// alert('Data Berhasil Ditambahkan!');
+				alert(response);
 				console.log(response);
 			},
 			error: function () {

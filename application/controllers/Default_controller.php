@@ -196,33 +196,13 @@ class Default_controller extends CI_Controller {
 	}
 
 	public function coba(){
-		$idktgr = $this->input->post('kategori');
-		$nama = $this->input->post('namavideo');
-		$file_element_name = 'video';
+		// $idktgr = $this->input->post('kategori');
+		// $nama = $this->input->post('namavideo');
+		// $file_element_name = 'video';
 
-		if (!$this->upload->do_upload($file_element_name))
-        {
-            // $status = 'error';
-			// $msg = $this->upload->display_errors('', '');
-			echo 'gagal';
-        }
-        else
-        {
-			$data = $this->upload->data();
-			print_r($data);
-            // $file_id = $this->files_model->insert_file($data['file_name'], $_POST['title']);
-            // if($file_id)
-            // {
-            //     $status = "success";
-            //     $msg = "File successfully uploaded";
-            // }
-            // else
-            // {
-            //     unlink($data['full_path']);
-            //     $status = "error";
-            //     $msg = "Something went wrong when saving the file, please try again.";
-            // }
-        }
+		echo $idktgr;
+
+		// echo
 
 	}
 
@@ -236,27 +216,6 @@ class Default_controller extends CI_Controller {
 		// echo $test['kategori'];
 		// echo $nmvideo;
 		
-		// $ffmpeg = "C:/xampp/htdocs/bekkotemplate/ffmpeg";
-		// $videofile = $FILES['video']['tmp_name'];
-		// $size = "120x90";
-
-		// $cmd ='ffmpeg -v 0 -y -i '.$in.' -vframes 1 -ss 5 -vcodec mjpeg -f rawvideo -s 286x160 -aspect 16:9 '.$out_thumb;
-		// shell_exec("ffmpeg -f image2 -r 1/1 -i images/pic%d.jpg -vf fps=25 test1.mp4");
-
-		// echo $ffmpeg;
-
-
-
-
-
-
-
-
-
-
-
-
-
 		if (isset($_FILES['video']['name']) && $_FILES['video']['name'] != '') {
 			unset($config);
 			$date = date("ymd");
@@ -315,22 +274,14 @@ class Default_controller extends CI_Controller {
 				// shell_exec($cmd);
 
 
-				$ffmpeg = "C:/xampp/htdocs/bekkotemplate/ffmpeg";
-				$video = "C:/xampp/htdocs/bekkotemplate/upload/videos/2010282020_09_10_11_31_42.mp4";
-				$gambar = "C:/xampp/htdocs/bekkotemplate/upload/images/1.jpg";
-				$durasi = '01:30:00';
-				// echo exec("ffmpeg -i $video -deinterlace -an -ss $durasi -t 00:00:01 -r 1 -y -vcodec mjpeg -f mjpeg $gambar 2>&1");
-
-				echo shell_exec("ffmpeg -i $video -deinterlace -an -ss $durasi -t 00:00:01 -r 1 -y -vcodec mjpeg -f mjpeg $gambar 2>&1");
-				echo '<br><br> hasil <br><br>';
-				// print_r($cmd);
+			
 			}
 	
 		}else{
 			echo "Please select a file";
 		}
 
-		// redirect($_SERVER['HTTP_REFERER']);
+		redirect($_SERVER['HTTP_REFERER']);
 
 	}
 
