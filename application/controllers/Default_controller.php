@@ -30,6 +30,16 @@ class Default_controller extends CI_Controller {
 		}
 	}
 
+	//Dashboard
+	public function kategoriadmin(){
+		if ($this->checkcookieadmin()) {
+			$this->load->view('admin/kategori');
+		}else{
+			header("Location: ".base_url()."index.php/loginadmin");
+			die();
+		}
+	}
+
 	
 	//GET DATA
 
@@ -91,16 +101,22 @@ class Default_controller extends CI_Controller {
 	//ambil data kategori
 	//parameter 1: true bila ingin return array, kosongi bila ingin Json
 	public function get_all_kategori($return_var = NULL){
-		$data = $this->Video_model->get_all_genre();
-			if (empty($data)){
-				$data = [];
-			}
-			if ($return_var == true) {
-				$jml = $data.length;
-				return $data;
-			}else{
-				echo json_encode($data);
-			}
+		$kategori = $this->input->post('id');
+		if($kategori != Null){
+			$data = $this->Video_model->get_all_genre($kategori);
+		} else {
+			$data = $this->Video_model->get_all_genre();
+		}
+
+		if (empty($data)){
+			$data = [];
+		}
+		if ($return_var == true) {
+			$jml = $data.length;
+			return $data;
+		}else{
+			echo json_encode($data);
+		}
 	}
 
 	//ambil data Video
@@ -175,7 +191,7 @@ class Default_controller extends CI_Controller {
 
 	// Tambah video 
 	public function insert_video($kategori, $nama, $video) {
-		// if ($this->checkcookieuser()) {
+		if ($this->checkcookieadmin()) {
 			// $idktgr = $this->input->post('kategori');
 			// $video = $this->input->post('nama');
 
@@ -190,9 +206,24 @@ class Default_controller extends CI_Controller {
 			);
 			$insertStatus = $this->Video_model->insert_video($data);
 			echo $insertStatus;
-		// }else{
-		// 	echo "access denied";
-		// }
+		}else{
+			echo "access denied";
+		}
+	}
+
+	public function insert_kategori() {
+		if ($this->checkcookieadmin()) {
+			$nama = $this->input->post('id');
+			echo $nama;
+
+			$data = array(
+				'NamaKategori' => $nama
+			);
+			$insertStatus = $this->Video_model->insert_kategori($data);
+			
+		}else{
+			echo "access denied";
+		}
 	}
 
 	public function coba(){
@@ -364,6 +395,25 @@ class Default_controller extends CI_Controller {
         $this->Video_model->update($where, $data);
 	}
 
+	// update kategori
+	public function update_kategori(){
+		if ($this->checkcookieadmin()) {
+			$id = $this->input->post('id');
+			$nama = $this->input->post('nama');
+	
+			$data = array(
+				'NamaKategori' => $nama,
+			);
+			
+			$where= array('IdKategori' => $id );
+			$this->Video_model->update_category($where, $data);
+
+			echo "acceptt";
+		}else{
+			echo "access denied";
+		}
+	}
+
 
 	//DELETE
 
@@ -382,14 +432,26 @@ class Default_controller extends CI_Controller {
 
 	// delete video
 	public function delete_video(){
-		// if ($this->checkcookieuser()) {
+		if ($this->checkcookieadmin()) {
 			$id = $this->input->post('id');;
 			$deleteStatus = $this->Video_model->delete($id);
 			
 			echo $deleteStatus;
-		// }else{
-		// 	echo "access denied";
-		// }
+		}else{
+			echo "access denied";
+		}
+	}
+
+	// delete kategori
+	public function delete_kategori(){
+		if ($this->checkcookieadmin()) {
+			$id = $this->input->post('id');;
+			$deleteStatus = $this->Video_model->delete_kategori($id);
+			
+			echo $deleteStatus;
+		}else{
+			echo "access denied";
+		}
 	}
 
 

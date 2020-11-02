@@ -63,6 +63,16 @@ class Video_model extends CI_Model {
 		return $return_message;
 	}
 
+	public function insert_kategori($data){
+        $this->db->insert('kategori', $data);
+        if ($this->db->affected_rows() > 0 ) {
+			$return_message = 'success';
+		}else{
+			$return_message = 'failed';
+		}
+		return $return_message;
+	}
+
 	public function insert_error_log($data){
 		$this->db->insert('error_log', $data);
 		if ($this->db->affected_rows() > 0 ) {
@@ -78,6 +88,11 @@ class Video_model extends CI_Model {
 
 	//UPDATE DATABASE
 	public function update($where, $data){
+		$this->db->where($where);
+        $this->db->update('video', $data);
+	}
+
+	public function update_category($where, $data){
 		$this->db->where($where);
         $this->db->update('video', $data);
 	}
@@ -102,6 +117,16 @@ class Video_model extends CI_Model {
 		return $return_message;
 	}
 
+	public function delete_kategori($id){
+		$this->db->where('IdKategori', $id);
+		$this->db->delete('kategori');
+		if ($this->db->affected_rows() > 0 ) {
+			$return_message = 'success';
+		}else{
+			$return_message = 'failed';
+		}
+		return $return_message;
+	}
 	
 	//OTHER
 	//Insert or Update

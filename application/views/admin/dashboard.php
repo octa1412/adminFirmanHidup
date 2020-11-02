@@ -95,6 +95,7 @@
 						<div class="card-body">
 							<div class="d-sm-flex align-items-center justify-content-between mb-4"> 
 								<button class="btn btn-primary" data-toggle="modal" data-target="#addmodal">Tambah Video</button>
+								<button class="btn btn-info" onclick="window.location.href='<?php echo base_url() ?>index.php/kategoriadmin'">Kategori</button>
 							</div>
 
 							<div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -273,9 +274,12 @@
 		$("#currentadmin").html(response);
 	});
 
+	var id = '';
+
 	$.ajax({
         url: "<?php echo base_url() ?>index.php/get_all_kategori",
         type: 'POST',
+		data: {id: id},
         success: function (json) {
           var response = JSON.parse(json);
           response.forEach((data)=>{

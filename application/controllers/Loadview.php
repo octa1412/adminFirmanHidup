@@ -16,4 +16,16 @@ class Loadview extends CI_Controller {
 		}
 	}
 
+	//Dashboard
+	public function kategoriadmin(){
+		if ($this->checkcookieadmin()) {
+			$this->load->view('admin/kategori');
+		}else{
+			header("Location: ".base_url()."index.php/loginadmin");
+			die();
+		}
+	}
+
+	
+
 }
