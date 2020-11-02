@@ -196,25 +196,78 @@ class Default_controller extends CI_Controller {
 	}
 
 	public function coba(){
-		// $idktgr = $this->input->post('kategori');
-		// $nama = $this->input->post('namavideo');
-		// $file_element_name = 'video';
+		$datalama = $this->Video_model->get_video_id($_POST['id_file']);
+		$videolama = $datalama[0]['SourceVideo'];
 
-		echo $idktgr;
+		if($_POST['status'] == "1"){			
+			unlink('./upload/videos/'.$datalama[0]['SourceVideo']);
 
-		// echo
+			if (isset($_FILES['fileupload']['name']) && $_FILES['fileupload']['name'] != '') {
+				unset($config);
+				$date = date("ymd");
+				$configVideo['upload_path'] = './upload/videos';
+				$configVideo['max_size'] = '60000';
+				$configVideo['allowed_types'] = 'avi|flv|wmv|mp3|mp4';
+				$configVideo['overwrite'] = FALSE;
+				$configVideo['remove_spaces'] = TRUE;
+				$video_name = $date.$_FILES['fileupload']['name'];
+				$configVideo['file_name'] = $video_name;
+		
+				$this->load->library('upload', $configVideo);
+				$this->upload->initialize($configVideo);
+
+				if(!$this->upload->do_upload('fileupload')) {
+					// echo $this->upload->display_errors();
+				}else{
+					$videoDetails = $this->upload->data();
+					$data['video_name']= $configVideo['file_name'];
+					$data['video_detail'] = $videoDetails;
+					
+					// echo "<pre>";
+					// print_r($data);
+					// echo "</pre>";
+
+					// echo "<br> <br> nama";
+					// echo $videoDetails['file_name'];
+					$data['idvideo'] = $_POST['id_file'];
+					$data['namavideo'] = $_POST['nama_file'];
+					$data['kategori'] = $_POST['kategori_file'];				
+					$nmvideo = $videoDetails['file_name'];	
+					$data['namafile'] = $nmvideo;			
+					
+					$this->update_video($data['idvideo'], $data['kategori'], $data['namavideo'], $nmvideo );
+										
+					echo json_encode($data);
+				
+				}
+		
+			}else{
+				echo "Please select a file";
+			}
+
+		} else {
+			$data['idvideo'] = $_POST['id_file'];
+			$data['namavideo'] = $_POST['nama_file'];
+			$data['kategori'] = $_POST['kategori_file'];				
+
+			$this->update_video($data['idvideo'], $data['kategori'], $data['namavideo'], $videolama );
+		}
 
 	}
 
+	public function try(){
+		$image = $this->input->post('data');
+		$image_name = 'asd';
+		$filename = $image_name . '.' . 'png';
+		$path = ('upload/');
+
+		//image uploading folder path
+		file_put_contents($path . $filename, file_get_contents($image));
+
+		echo $image;
+	}
+
 	public function add_video(){
-				
-		// echo 'adasdas';
-		// // echo($_FILES['video']['name']);
-		// print_r($test);
-		// echo '<br>';
-		// echo $test['namavideo'];
-		// echo $test['kategori'];
-		// echo $nmvideo;
 		
 		if (isset($_FILES['video']['name']) && $_FILES['video']['name'] != '') {
 			unset($config);
@@ -241,8 +294,6 @@ class Default_controller extends CI_Controller {
 				print_r($data);
 				echo "</pre>";
 
-				// echo '<span class="alert alert-success">input data berhasil</span>';
-
 				echo "<br> <br> nama";
 				echo $videoDetails['file_name'];
 				$test['namavideo'] = $this->input->post('namavideo');
@@ -250,30 +301,6 @@ class Default_controller extends CI_Controller {
 				$nmvideo = $videoDetails['file_name'];				
 				
 				$this->insert_video($test['kategori'], $test['namavideo'], $nmvideo );
-
-				// $command1="ffmpeg -f image2 -r 1/1 -i images/pic%d.jpg -vf fps=25 $nmvideo";
-				//command for every 1 second image change in video
-				// exec($command1);
-				// $directory_path   	= $data['video_detail']['file_path'];
-				// $directory_path_full      = $data['video_detail']['full_path'];
-				// $file_name  = $data['video_detail']['raw_name'];
-
-				// ffmpeg command to convert video
-
-				// exec("ffmpeg -i ".$directory_path_full." ".$directory_path.$file_name.".jpg"); 
-
-				// exec("ffmpeg -i ". $data['video_detail']['file_name'] ."-c:v copy frames.jpg");
-
-				// $ffmpeg = "C:/xampp/htdocs/bekkotemplate/ffmpeg";
-				// $videfile = $data['video_detail']['file_name'];
-				// $getfrom = 5;
-				// $size = "120x90";
-				// $imageFile = "C:/xampp/htdocs/bekkotemplate/upload/images/1.jpg";
-
-				// $cmd = "$ffmpeg -i $videfile -an -ss $getfrom -s $size $imageFile ";
-				// shell_exec($cmd);
-
-
 			
 			}
 	
@@ -321,14 +348,16 @@ class Default_controller extends CI_Controller {
 	}
 
 	//Update data video
-	public function update_video(){
-		$id = $this->input->post('id');
-		$nama = $this->input->post('nama');
-		$kategori = $this->input->post('kategori');
+	public function update_video($id, $kategori, $nama, $video){
+		// $id = $this->input->post('id');
+		// $nama = $this->input->post('nama');
+		// $kategori = $this->input->post('kategori');
+		// $status = $this->input->post('status');
 
 		$data = array(
 			'NamaVideo' => $nama,
-			'IdKategori' => $kategori
+			'IdKategori' => $kategori,
+			'SourceVideo' => $video
 		);
 		
 		$where= array('IdVideo' => $id );

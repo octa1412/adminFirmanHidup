@@ -242,21 +242,21 @@
 							<label for="ed-nama-video" class="col-form-label">Nama Video</label>
 							<input type="text" class="form-control" id="ed-nama-video" required>
 						</div>
-						<!-- <div class="form-group" id="divupload">
+						<div class="form-group" id="divupload">
 							<label for="ed-upload">Upload Video</label><br>
 							<input type="file" accept="video/*" id="ed-upload" name="ed-upload">
-						</div> -->
+						</div>
 						
-						<div>	
+						<div class="form-group" id="divimage">	
 							<label for="ed-upload">Video</label><br>
-							<img src="<?php echo base_url() ?>dist/img/defaults.jpg" width="auto;" height="100px;"> <br><br>
-							<!-- <button type="button" class="btn btn-secondary" id="hpsvideo">Hapus Video</button> -->
+							<img src="" id="edtimg" width="400px;" height="auto;"> <br><br>
+							<button type="button" class="btn btn-secondary" id="hpsvideo">Ganti Video</button>
 						</div>
 
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal" id="bataldata">Batal</button>
 					<button type="button" class="btn btn-primary" id="updatedata">Update</button>
 				</div>
             </div>
@@ -307,6 +307,7 @@
       
     });
 
+	// get all data for table
 	function get_data(){
 		$(".dataTables_empty").text("Loading...")
 		var ktgr = $("#fl-kategori").val();
@@ -335,7 +336,7 @@
 
 						if(data.IdKategori != null) {
 							dTable.row.add([
-							'<video width="400" controls><source src="http://localhost/bekkotemplate/upload/videos/'+ srcvideo +'" type="video/webm"></video>',
+							'<video id="getvideo'+ data.IdVideo +'" width="400" controls src="http://localhost/bekkotemplate/upload/videos/'+ srcvideo +'" </video>',
 							namavideo,
 							kategorivideo,
 								'<button class="btn btn-outline-success mt-10 mb-10" onclick=tampildata("'+ no +'") >Edit</button><br>'
@@ -357,6 +358,35 @@
 		
     }
 
+	// update data 
+	function insertdata(data) {
+		$.ajax({
+			url: "<?php echo base_url()?>index.php/coba/",
+			type: 'POST',
+			data: data,
+			cache: false,
+			processData: false,
+			contentType: false,
+			success: function (json) {
+				alert('Data Berhasil Diupdate!');
+				// alert(json);
+				// var response = JSON.parse(json);
+				// alert(json.video_detail.full_path);
+				// console.log(json);
+				// console.log('hasil FILLEE : ', response.video_detail.file_name  );
+				window.location = "<?php echo base_url() ?>index.php/dashboardadmin";
+				
+
+			},
+			error: function () {
+				console.log("gagal update");
+				alert('Data gagal diinputkan!');
+			}
+		});
+
+    }
+
+	// get data one id
 	function tampildata(id) {
 		// console.log(id);
 		$.ajax({
@@ -366,42 +396,97 @@
 			success: function (response) {
 				var response = JSON.parse(response);
 				response.forEach((data)=>{
+					var inputidvideo = data.IdVideo
 					var kategori = data.IdKategori;
 					var namavideo = data.NamaVideo;
-					var srcvideo = '2010282020_09_10_11_37_38.mp4';
-					//  console.log('sadas');
-					//  console.log(data.NamaVideo);
-					// document.getElementById("divupload").style.display = "none";
+					var status = '0';
+					document.getElementById("divupload").style.display = "none";
+									
+					// console.log('id :   ', inputidvideo);
+					var idvideo = "getvideo" + inputidvideo;
+					var v = document.getElementById(idvideo);
+
+					var a = "#"+idvideo
+					// console.log('mulai', a);
+
+					
+					var video = $(a).get(0);
+					// console.log('video : ', video);
+					var canvas = document.createElement("canvas");
+					canvas.width = video.videoWidth ;
+					// console.log('w ', canvas.width);
+					canvas.height = video.videoHeight;
+					// console.log('h ', canvas.height);
+					canvas.getContext('2d')
+						.drawImage(video, 0, 0, canvas.width, canvas.height);
+			
+					var img = document.createElement("img");
+					img.src = canvas.toDataURL();
+					hasil = canvas.toDataURL('image/png');
+
+					// console.log('hasil capture: ', canvas);
+					// console.log('IMAGE : ', img.src);
+
+					document.getElementById("edtimg").src = img.src;
+
+
+					$('#hpsvideo').click(function editdata() {
+						document.getElementById("divupload").style.display = "block";
+						document.getElementById("divimage").style.display = "none";
+						status = '1';
+
+					});
+
+					$('#bataldata').click(function editdata() {
+						document.getElementById("divupload").style.display = "none";
+						document.getElementById("divimage").style.display = "block";
+						status ='0'
+
+					});
 
 					$('#editmodal').modal();
 					$("#id-video").val(data.IdVideo);
 					$("#ed-kategori").val(kategori);
 					$('#ed-nama-video').val(namavideo);
 					$('#updatedata').click(function editdata() {
+
 						var inputid = document.getElementById("id-video").value
 						var inputktgr = document.getElementById("ed-kategori").value
 						var inputnama = document.getElementById("ed-nama-video").value
-						if(inputid == "default"){
-							alert("Silahkan Pilih Kategori!")
-							return;
-						}
 
+						if(status == "1"){
+							var myFile = $('#ed-upload').prop('files');
+							// console.log('video : ', myFile.length);
 
-
-						$.ajax({
-							url: "<?php echo base_url()?>index.php/update_video/",
-							type: 'POST',
-							data: {id:inputid, nama:inputnama, kategori:inputktgr},
-							success: function (response) {
-								alert('Data Berhasil Diedit!');
-								window.location = "<?php echo base_url() ?>index.php/dashboardadmin";
-							},
-							error: function () {
-								console.log("gagal update");
-								alert('Data gagal diupdate!');
-
+							if(myFile.length == 0){
+								// e.preventDefault();
+								alert("Silahkan Pilih File!")
+								return;
 							}
-						});
+
+							const fileupload = $('#ed-upload').prop('files')[0];
+							// console.log('FILE UPLOAD : ', fileupload);
+
+							let formData = new FormData();
+							formData.append('fileupload', fileupload);
+							formData.append('nama_file', inputnama);
+							formData.append('kategori_file', inputktgr);
+							formData.append('id_file', inputid);
+							formData.append('status',status);
+							
+							insertdata(formData);
+
+
+						} else {
+							let formData = new FormData();
+							formData.append('nama_file', inputnama);
+							formData.append('kategori_file', inputktgr);
+							formData.append('id_file', inputid);
+							formData.append('status',status);
+							
+							insertdata(formData);
+						}
+						
 					});
 					
 				})                
