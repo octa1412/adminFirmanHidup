@@ -286,7 +286,7 @@ class Default_controller extends CI_Controller {
 
 	}
 
-	public function try(){
+	public function convert_file_image(){
 		$image = $this->input->post('data');
 		$image_name = 'asd';
 		$filename = $image_name . '.' . 'png';
@@ -340,6 +340,55 @@ class Default_controller extends CI_Controller {
 		}
 
 		redirect($_SERVER['HTTP_REFERER']);
+
+	}
+
+	public function add_video_test(){
+
+		echo "<pre>";
+		print_r($_FILES['fileupload']);
+		echo "</pre>";
+
+		// if (isset($_FILES['fileupload']['name']) && $_FILES['fileupload']['name'] != '') {
+		// 	unset($config);
+		// 	$date = date("ymd");
+		// 	$configVideo['upload_path'] = './upload/videos';
+		// 	$configVideo['max_size'] = '60000';
+		// 	$configVideo['allowed_types'] = 'avi|flv|wmv|mp3|mp4';
+		// 	$configVideo['overwrite'] = FALSE;
+		// 	$configVideo['remove_spaces'] = TRUE;
+		// 	$video_name = $date.$_FILES['fileupload']['name'];
+		// 	$configVideo['file_name'] = $video_name;
+	
+		// 	$this->load->library('upload', $configVideo);
+		// 	$this->upload->initialize($configVideo);
+
+		// 	if(!$this->upload->do_upload('fileupload')) {
+		// 		// echo $this->upload->display_errors();
+		// 	}else{
+		// 		$videoDetails = $this->upload->data();
+		// 		$data['video_name']= $configVideo['file_name'];
+		// 		$data['video_detail'] = $videoDetails;
+				
+		// 		echo "<pre>";
+		// 		print_r($data);
+		// 		echo "</pre>";
+
+		// 		echo "<br> <br> nama";
+		// 		echo $videoDetails['file_name'];
+		// 		$test['namavideo'] = $this->input->post('namavideo');
+		// 		$test['kategori'] = $this->input->post('kategori');				
+		// 		$nmvideo = $videoDetails['file_name'];				
+				
+		// 		$this->insert_video($test['kategori'], $test['namavideo'], $nmvideo );
+			
+		// 	}
+	
+		// }else{
+		// 	echo "Please select a file";
+		// }
+
+		// redirect($_SERVER['HTTP_REFERER']);
 
 	}
 

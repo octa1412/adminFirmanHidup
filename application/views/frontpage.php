@@ -38,7 +38,7 @@
 
 			<div class="form-group">
 				<label for="video">Upload Video</label><br>
-				<input type="file" id="video" name="video" >
+				<input type="file" id="filevideo" name="filevideo" >
 			</div>
 
 			<div class="form-group">
@@ -115,7 +115,7 @@ document.getElementById("videohidden").style.display = "none";
 			return;
 		}		
 
-		const fileupload = $('#video').prop('files')[0];
+		const fileupload = $('#filevideo').prop('files')[0];
 		var nama_file = $('#nama-video').val();
 		var kategori_file = $('#kategori').val();
 
@@ -129,50 +129,55 @@ document.getElementById("videohidden").style.display = "none";
 
 
 		$.ajax({
-			url: "<?php echo base_url()?>index.php/coba/",
+			url: "<?php echo base_url()?>index.php/add_video_test/",
 			type: 'POST',
 			data: formData,
 			cache: false,
 			processData: false,
 			contentType: false,
-			success: function (json) {
+			success: function (response) {
 				// alert(json);
-				var response = JSON.parse(json);
-				alert(response.video_detail.full_path);
+				// var response = JSON.parse(json);
+				// alert(response.video_detail.full_path);
 				console.log(response);
-				console.log('hasil  : ', response.video_detail.file_name  );
+				return false;
+				// console.log('hasil  : ', response.video_detail.file_name  );
 
-				var a = "http://localhost/bekkotemplate/upload/videos/2010302020_09_10_11_34_54.mp4" ;
+				// var a = "http://localhost/bekkotemplate/upload/videos/2010302020_09_10_11_34_54.mp4" ;
 
-				document.getElementById("videoplayhidden").src = a;
+				// document.getElementById("videoplayhidden").src = a;
 
-				var v = document.getElementById("videoplayhidden");
-				v.addEventListener( "loadedmetadata", function (e) {
-					var width = this.videoWidth;
-					var height = this.videoHeight;
+				// var v = document.getElementById("videoplayhidden");
+				// v.addEventListener( "loadedmetadata", function (e) {
+				// 	var width = this.videoWidth;
+				// 	var height = this.videoHeight;
 
-						console.log('hhhhh : ', width);
-						console.log('hhhhh : ', height);
-						video = $("#videoplayhidden").get(0);
-
-
-						var canvas = document.createElement("canvas");
-						canvas.width = width ;
-						canvas.height = height;
-
-						//generate thumbnail URL data
-						var context = canvas.getContext('2d');
-						context.drawImage(video, 0, 0, canvas.width, canvas.height);
-						var dataURL = canvas.toDataURL();
-
-						//create img
-						var img = document.createElement('img');
-						img.setAttribute('src', dataURL);
-
-						console.log('oooooo : ', img.src);
+				// 		console.log('hhhhh : ', width);
+				// 		console.log('hhhhh : ', height);
+				// 		video = $("#videoplayhidden").get(0);
 
 						
-				}, false );
+
+				// 		var canvas = document.createElement("canvas");
+				// 		canvas.width = width ;
+				// 		canvas.height = height;
+
+				// 		//generate thumbnail URL data
+				// 		var context = canvas.getContext('2d');
+				// 		context.drawImage(video, 0, 0, canvas.width, canvas.height);
+				// 		var dataURL = canvas.toDataURL();
+
+				// 		//create img
+				// 		var img = document.createElement('img');
+				// 		img.onload = function(){
+				// 			img.setAttribute('src', dataURL);
+				// 		}
+				// 		// img.setAttribute('src', dataURL);
+
+				// 		console.log('oooooo : ', dataURL);
+
+						
+				// }, false );
 
 
 

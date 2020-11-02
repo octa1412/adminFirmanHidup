@@ -202,8 +202,8 @@
 						</div>
 
 						<div>
-							<!-- <video width="400" controls><source src="" type="video/webm"></video> -->
-							<img src="<?php echo base_url() ?>dist/img/defaults.jpg" width="auto;" height="100px;"> 
+							<video width="400" height="auto" id="launch"></video>
+							<!-- <img src="<?php echo base_url() ?>dist/img/defaults.jpg" width="auto;" height="100px;">  -->
 						</div>
               	</div>
 
@@ -295,6 +295,16 @@
           $("#submit").prop("disabled", false);
         }
 	});
+
+	var Element = document.getElementById('video'); 
+    var imgs = document.getElementById('launch'); 
+    Element.addEventListener('change', function() { 
+		var url = URL.createObjectURL(Element.files[0]); 
+		imgs.src = url; 
+		console.log(url); 
+		console.log('aaaa ' ,imgs);
+
+	}); 
 
 	$(document).ready(function () {      
 		dTable = $('#table1').DataTable({
