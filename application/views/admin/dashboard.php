@@ -301,14 +301,14 @@
     Element.addEventListener('change', function() { 
 		var url = URL.createObjectURL(Element.files[0]); 
 		imgs.src = url; 
-		console.log(url); 
-		console.log('aaaa ' ,imgs);
+		// console.log(url); 
+		// console.log('aaaa ' ,imgs);
 
 	}); 
 
 	$(document).ready(function () {      
 		dTable = $('#table1').DataTable({
-			responsive: true
+			responsive: true,
 		});
 		
       	get_data()

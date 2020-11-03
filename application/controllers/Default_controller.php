@@ -186,15 +186,12 @@ class Default_controller extends CI_Controller {
 			'value' => $log
 		);
 		$insertStatus = $this->Default_model->insert_error_log($data);
-		// echo $insertStatus;
+		echo $insertStatus;
 	}
 
 	// Tambah video 
 	public function insert_video($kategori, $nama, $video) {
 		if ($this->checkcookieadmin()) {
-			// $idktgr = $this->input->post('kategori');
-			// $video = $this->input->post('nama');
-
 			$idktgr = $kategori;
 			$nama = $nama;
 			$video = $video;
@@ -211,93 +208,22 @@ class Default_controller extends CI_Controller {
 		}
 	}
 
+	//tambah kategori
 	public function insert_kategori() {
 		if ($this->checkcookieadmin()) {
 			$nama = $this->input->post('id');
-			echo $nama;
 
 			$data = array(
 				'NamaKategori' => $nama
 			);
 			$insertStatus = $this->Video_model->insert_kategori($data);
-			
+			echo $insertStatus;
 		}else{
 			echo "access denied";
 		}
 	}
-
-	public function coba(){
-		$datalama = $this->Video_model->get_video_id($_POST['id_file']);
-		$videolama = $datalama[0]['SourceVideo'];
-
-		if($_POST['status'] == "1"){			
-			unlink('./upload/videos/'.$datalama[0]['SourceVideo']);
-
-			if (isset($_FILES['fileupload']['name']) && $_FILES['fileupload']['name'] != '') {
-				unset($config);
-				$date = date("ymd");
-				$configVideo['upload_path'] = './upload/videos';
-				$configVideo['max_size'] = '60000';
-				$configVideo['allowed_types'] = 'avi|flv|wmv|mp3|mp4';
-				$configVideo['overwrite'] = FALSE;
-				$configVideo['remove_spaces'] = TRUE;
-				$video_name = $date.$_FILES['fileupload']['name'];
-				$configVideo['file_name'] = $video_name;
-		
-				$this->load->library('upload', $configVideo);
-				$this->upload->initialize($configVideo);
-
-				if(!$this->upload->do_upload('fileupload')) {
-					// echo $this->upload->display_errors();
-				}else{
-					$videoDetails = $this->upload->data();
-					$data['video_name']= $configVideo['file_name'];
-					$data['video_detail'] = $videoDetails;
-					
-					// echo "<pre>";
-					// print_r($data);
-					// echo "</pre>";
-
-					// echo "<br> <br> nama";
-					// echo $videoDetails['file_name'];
-					$data['idvideo'] = $_POST['id_file'];
-					$data['namavideo'] = $_POST['nama_file'];
-					$data['kategori'] = $_POST['kategori_file'];				
-					$nmvideo = $videoDetails['file_name'];	
-					$data['namafile'] = $nmvideo;			
-					
-					$this->update_video($data['idvideo'], $data['kategori'], $data['namavideo'], $nmvideo );
-										
-					echo json_encode($data);
-				
-				}
-		
-			}else{
-				echo "Please select a file";
-			}
-
-		} else {
-			$data['idvideo'] = $_POST['id_file'];
-			$data['namavideo'] = $_POST['nama_file'];
-			$data['kategori'] = $_POST['kategori_file'];				
-
-			$this->update_video($data['idvideo'], $data['kategori'], $data['namavideo'], $videolama );
-		}
-
-	}
-
-	public function convert_file_image(){
-		$image = $this->input->post('data');
-		$image_name = 'asd';
-		$filename = $image_name . '.' . 'png';
-		$path = ('upload/');
-
-		//image uploading folder path
-		file_put_contents($path . $filename, file_get_contents($image));
-
-		echo $image;
-	}
-
+	
+	
 	public function add_video(){
 		
 		if (isset($_FILES['video']['name']) && $_FILES['video']['name'] != '') {
@@ -342,56 +268,6 @@ class Default_controller extends CI_Controller {
 		redirect($_SERVER['HTTP_REFERER']);
 
 	}
-
-	public function add_video_test(){
-
-		echo "<pre>";
-		print_r($_FILES['fileupload']);
-		echo "</pre>";
-
-		// if (isset($_FILES['fileupload']['name']) && $_FILES['fileupload']['name'] != '') {
-		// 	unset($config);
-		// 	$date = date("ymd");
-		// 	$configVideo['upload_path'] = './upload/videos';
-		// 	$configVideo['max_size'] = '60000';
-		// 	$configVideo['allowed_types'] = 'avi|flv|wmv|mp3|mp4';
-		// 	$configVideo['overwrite'] = FALSE;
-		// 	$configVideo['remove_spaces'] = TRUE;
-		// 	$video_name = $date.$_FILES['fileupload']['name'];
-		// 	$configVideo['file_name'] = $video_name;
-	
-		// 	$this->load->library('upload', $configVideo);
-		// 	$this->upload->initialize($configVideo);
-
-		// 	if(!$this->upload->do_upload('fileupload')) {
-		// 		// echo $this->upload->display_errors();
-		// 	}else{
-		// 		$videoDetails = $this->upload->data();
-		// 		$data['video_name']= $configVideo['file_name'];
-		// 		$data['video_detail'] = $videoDetails;
-				
-		// 		echo "<pre>";
-		// 		print_r($data);
-		// 		echo "</pre>";
-
-		// 		echo "<br> <br> nama";
-		// 		echo $videoDetails['file_name'];
-		// 		$test['namavideo'] = $this->input->post('namavideo');
-		// 		$test['kategori'] = $this->input->post('kategori');				
-		// 		$nmvideo = $videoDetails['file_name'];				
-				
-		// 		$this->insert_video($test['kategori'], $test['namavideo'], $nmvideo );
-			
-		// 	}
-	
-		// }else{
-		// 	echo "Please select a file";
-		// }
-
-		// redirect($_SERVER['HTTP_REFERER']);
-
-	}
-
 	
 
 	//UPDATE
@@ -427,21 +303,75 @@ class Default_controller extends CI_Controller {
 		}
 	}
 
-	//Update data video
-	public function update_video($id, $kategori, $nama, $video){
-		// $id = $this->input->post('id');
-		// $nama = $this->input->post('nama');
-		// $kategori = $this->input->post('kategori');
-		// $status = $this->input->post('status');
+	//update video
+	public function coba(){
+		$datalama = $this->Video_model->get_video_id($_POST['id_file']);
+		$videolama = $datalama[0]['SourceVideo'];
 
-		$data = array(
-			'NamaVideo' => $nama,
-			'IdKategori' => $kategori,
-			'SourceVideo' => $video
-		);
+		if($_POST['status'] == "1"){			
+			unlink('./upload/videos/'.$datalama[0]['SourceVideo']);
+
+			if (isset($_FILES['fileupload']['name']) && $_FILES['fileupload']['name'] != '') {
+				unset($config);
+				$date = date("ymd");
+				$configVideo['upload_path'] = './upload/videos';
+				$configVideo['max_size'] = '60000';
+				$configVideo['allowed_types'] = 'avi|flv|wmv|mp3|mp4';
+				$configVideo['overwrite'] = FALSE;
+				$configVideo['remove_spaces'] = TRUE;
+				$video_name = $date.$_FILES['fileupload']['name'];
+				$configVideo['file_name'] = $video_name;
 		
-		$where= array('IdVideo' => $id );
-        $this->Video_model->update($where, $data);
+				$this->load->library('upload', $configVideo);
+				$this->upload->initialize($configVideo);
+
+				if(!$this->upload->do_upload('fileupload')) {
+					// echo $this->upload->display_errors();
+				}else{
+					$videoDetails = $this->upload->data();
+					$data['video_name']= $configVideo['file_name'];
+					$data['video_detail'] = $videoDetails;
+				
+					$data['idvideo'] = $_POST['id_file'];
+					$data['namavideo'] = $_POST['nama_file'];
+					$data['kategori'] = $_POST['kategori_file'];				
+					$nmvideo = $videoDetails['file_name'];	
+					$data['namafile'] = $nmvideo;			
+					
+					$this->update_video($data['idvideo'], $data['kategori'], $data['namavideo'], $nmvideo );
+										
+					echo json_encode($data);
+				
+				}
+		
+			}else{
+				echo "Please select a file";
+			}
+
+		} else {
+			$data['idvideo'] = $_POST['id_file'];
+			$data['namavideo'] = $_POST['nama_file'];
+			$data['kategori'] = $_POST['kategori_file'];				
+
+			$this->update_video($data['idvideo'], $data['kategori'], $data['namavideo'], $videolama );
+		}
+
+	}
+
+	//Update data video ke database
+	public function update_video($id, $kategori, $nama, $video){
+		if ($this->checkcookieadmin()) {
+			$data = array(
+				'NamaVideo' => $nama,
+				'IdKategori' => $kategori,
+				'SourceVideo' => $video
+			);
+			
+			$where= array('IdVideo' => $id );
+			$this->Video_model->update($where, $data);
+		}else{
+			echo "access denied";
+		}
 	}
 
 	// update kategori
@@ -463,7 +393,7 @@ class Default_controller extends CI_Controller {
 		}
 	}
 
-
+	
 	//DELETE
 
 	//Delete admin
@@ -658,32 +588,17 @@ class Default_controller extends CI_Controller {
 		return $s;
 	}
 
+	public function convert_file_image(){
+		$image = $this->input->post('data');
+		$image_name = 'asd';
+		$filename = $image_name . '.' . 'png';
+		$path = ('upload/');
 
+		//image uploading folder path
+		file_put_contents($path . $filename, file_get_contents($image));
 
-	public function testing(){
-		echo $this->Default_model->get_count_admin();
+		echo $image;
 	}
 
-
-	public function get_image($file){
-		$config = array(
-			'image_library' => 'GD2',
-			'source_image'  => './assets/images/'.$file,
-			'maintain_ratio'=> FALSE,
-			'width'         => 600,
-			'height'        => 400,
-			'new_image'     => './assets/images/'.$file
-		);
-
-		$this->load->library('image_lib', $config[0]);
-        foreach ($config as $item){
-            $this->image_lib->initialize($item);
-            if(!$this->image_lib->resize()){
-                return false;
-            }
-            $this->image_lib->clear();
-        }
-
-	}
-
+	
 }
