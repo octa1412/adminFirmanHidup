@@ -19,10 +19,11 @@ class Video_model extends CI_Model {
     public function get_video($id = NULL) {
 		$this->db->select('*');
 		$this->db->join('kategori','kategori.IdKategori = video.IdKategori');
-        $this->db->from('video');
+		$this->db->from('video');		
         if($id != NULL){
             $this->db->where('kategori.IdKategori', $id);
-        }
+		}
+		$this->db->order_by('video.IdVideo','desc');
 		$query = $this->db->get();
 		return $query->result_array();
 	}
@@ -32,7 +33,7 @@ class Video_model extends CI_Model {
 		$this->db->join('kategori','kategori.IdKategori = video.IdKategori');
         $this->db->from('video');
         if($id != NULL){
-            $this->db->where('video.IdVideo', $id);
+			$this->db->where('video.IdVideo', $id);			
         }
 		$query = $this->db->get();
 		return $query->result_array();

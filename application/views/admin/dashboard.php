@@ -183,7 +183,7 @@
 				</div>
 
               	<div class="modal-body">
-					<form class="cssform" name="property" id="property" method="POST" action="<?php echo base_url('index.php/add_video')?>" enctype="multipart/form-data">
+					<form onsubmit="insertvideo(event)">
 						<div class="form-group">
 							<label for="kategori" class="col-form-label">Kategori</label>
 							<select class="custom-select" id="kategori" name="kategori" required>
@@ -197,7 +197,7 @@
 						</div>      
 
 						<div class="form-group">
-							<label for="upload">Upload Video</label><br>
+							<label for="video">Upload Video</label><br>
 							<input type="file" accept="video/*" id="video" name="video">
 						</div>
 
@@ -249,7 +249,7 @@
 						</div>
 						
 						<div class="form-group" id="divimage">	
-							<label for="ed-upload">Video</label><br>
+							<label>Video</label><br>
 							<img src="" id="edtimg" width="400px;" height="auto;"> <br><br>
 							<button type="button" class="btn btn-secondary" id="hpsvideo">Ganti Video</button>
 						</div>
@@ -309,6 +309,7 @@
 	$(document).ready(function () {      
 		dTable = $('#table1').DataTable({
 			responsive: true,
+            "ordering": false
 		});
 		
       	get_data()
@@ -348,9 +349,12 @@
 						var srcgambar = data.SourceVideo;
 						no = data.IdVideo;   
 
+						var link = "<?php echo base_url() ?>" + "upload/videos/" +srcvideo
+
+
 						if(data.IdKategori != null) {
 							dTable.row.add([
-							'<video id="getvideo'+ data.IdVideo +'" width="400" controls src="http://localhost/bekkotemplate/upload/videos/'+ srcvideo +'" </video>',
+							'<video id="getvideo'+ data.IdVideo +'" width="400" controls src="'+ link +'" </video>',
 							namavideo,
 							kategorivideo,
 								'<button class="btn btn-outline-success mt-10 mb-10" onclick=tampildata("'+ no +'") >Edit</button><br>'
@@ -382,7 +386,7 @@
 			processData: false,
 			contentType: false,
 			success: function (json) {
-				alert('Data Berhasil Diupdate!');
+				// alert('Data Berhasil Diupdate!');
 				// alert(json);
 				// var response = JSON.parse(json);
 				// alert(json.video_detail.full_path);
@@ -400,6 +404,39 @@
 
     }
 
+	function insertvideo(e){
+		var inputid = "none";
+		var inputktgr = document.getElementById("kategori").value;
+		var inputnama = document.getElementById("namavideo").value;
+		var status = '2';
+
+		var myFile = $('#video').prop('files');
+		// console.log('video : ', myFile.length);
+		// console.log('nama :', inputnama);
+
+
+		if(myFile.length == 0){
+			e.preventDefault();
+			alert("Silahkan Pilih File!")
+			return;
+		}
+
+		const fileupload = $('#video').prop('files')[0];
+		// console.log('FILE UPLOAD : ', fileupload);
+
+		let formData = new FormData();
+		formData.append('fileupload', fileupload);
+		formData.append('nama_file', inputnama);
+		formData.append('kategori_file', inputktgr);
+		formData.append('id_file', inputid);
+		formData.append('status',status);
+		
+		insertdata(formData);
+		alert('Data Berhasil Disimpan!');
+		e.preventDefault();
+
+	}
+
 	// get data one id
 	function tampildata(id) {
 		// console.log(id);
@@ -414,32 +451,24 @@
 					var kategori = data.IdKategori;
 					var namavideo = data.NamaVideo;
 					var status = '0';
+
 					document.getElementById("divupload").style.display = "none";
+					document.getElementById("divimage").style.display = "block";
 									
-					// console.log('id :   ', inputidvideo);
 					var idvideo = "getvideo" + inputidvideo;
 					var v = document.getElementById(idvideo);
-
 					var a = "#"+idvideo
-					// console.log('mulai', a);
-
 					
 					var video = $(a).get(0);
-					// console.log('video : ', video);
 					var canvas = document.createElement("canvas");
 					canvas.width = video.videoWidth ;
-					// console.log('w ', canvas.width);
 					canvas.height = video.videoHeight;
-					// console.log('h ', canvas.height);
 					canvas.getContext('2d')
 						.drawImage(video, 0, 0, canvas.width, canvas.height);
 			
 					var img = document.createElement("img");
 					img.src = canvas.toDataURL();
 					hasil = canvas.toDataURL('image/png');
-
-					// console.log('hasil capture: ', canvas);
-					// console.log('IMAGE : ', img.src);
 
 					document.getElementById("edtimg").src = img.src;
 
@@ -448,13 +477,6 @@
 						document.getElementById("divupload").style.display = "block";
 						document.getElementById("divimage").style.display = "none";
 						status = '1';
-
-					});
-
-					$('#bataldata').click(function editdata() {
-						document.getElementById("divupload").style.display = "none";
-						document.getElementById("divimage").style.display = "block";
-						status ='0'
 
 					});
 
@@ -470,10 +492,8 @@
 
 						if(status == "1"){
 							var myFile = $('#ed-upload').prop('files');
-							// console.log('video : ', myFile.length);
 
 							if(myFile.length == 0){
-								// e.preventDefault();
 								alert("Silahkan Pilih File!")
 								return;
 							}
@@ -489,7 +509,7 @@
 							formData.append('status',status);
 							
 							insertdata(formData);
-
+							alert('Data Berhasil Diupdate!');
 
 						} else {
 							let formData = new FormData();
@@ -499,10 +519,10 @@
 							formData.append('status',status);
 							
 							insertdata(formData);
+							alert('Data Berhasil Diupdate!');
 						}
 						
-					});
-					
+					});					
 				})                
 			},
 			error: function () {

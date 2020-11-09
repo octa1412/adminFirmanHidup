@@ -222,53 +222,7 @@ class Default_controller extends CI_Controller {
 			echo "access denied";
 		}
 	}
-	
-	
-	public function add_video(){
 		
-		if (isset($_FILES['video']['name']) && $_FILES['video']['name'] != '') {
-			unset($config);
-			$date = date("ymd");
-			$configVideo['upload_path'] = './upload/videos';
-			$configVideo['max_size'] = '60000';
-			$configVideo['allowed_types'] = 'avi|flv|wmv|mp3|mp4';
-			$configVideo['overwrite'] = FALSE;
-			$configVideo['remove_spaces'] = TRUE;
-			$video_name = $date.$_FILES['video']['name'];
-			$configVideo['file_name'] = $video_name;
-	
-			$this->load->library('upload', $configVideo);
-			$this->upload->initialize($configVideo);
-
-			if(!$this->upload->do_upload('video')) {
-				// echo $this->upload->display_errors();
-			}else{
-				$videoDetails = $this->upload->data();
-				$data['video_name']= $configVideo['file_name'];
-				$data['video_detail'] = $videoDetails;
-				
-				echo "<pre>";
-				print_r($data);
-				echo "</pre>";
-
-				echo "<br> <br> nama";
-				echo $videoDetails['file_name'];
-				$test['namavideo'] = $this->input->post('namavideo');
-				$test['kategori'] = $this->input->post('kategori');				
-				$nmvideo = $videoDetails['file_name'];				
-				
-				$this->insert_video($test['kategori'], $test['namavideo'], $nmvideo );
-			
-			}
-	
-		}else{
-			echo "Please select a file";
-		}
-
-		redirect($_SERVER['HTTP_REFERER']);
-
-	}
-	
 
 	//UPDATE
 
@@ -305,8 +259,12 @@ class Default_controller extends CI_Controller {
 
 	//update video
 	public function coba(){
-		$datalama = $this->Video_model->get_video_id($_POST['id_file']);
-		$videolama = $datalama[0]['SourceVideo'];
+		if($_POST['id_file'] == "none"){			
+		} else {
+			$datalama = $this->Video_model->get_video_id($_POST['id_file']);
+			$videolama = $datalama[0]['SourceVideo'];
+		}
+		
 
 		if($_POST['status'] == "1"){			
 			unlink('./upload/videos/'.$datalama[0]['SourceVideo']);
@@ -348,7 +306,46 @@ class Default_controller extends CI_Controller {
 				echo "Please select a file";
 			}
 
-		} else {
+		} else if($_POST['status'] == "2"){ 
+			if (isset($_FILES['fileupload']['name']) && $_FILES['fileupload']['name'] != '') {
+				unset($config);
+				$date = date("ymd");
+				$configVideo['upload_path'] = './upload/videos';
+				$configVideo['max_size'] = '60000';
+				$configVideo['allowed_types'] = 'avi|flv|wmv|mp3|mp4';
+				$configVideo['overwrite'] = FALSE;
+				$configVideo['remove_spaces'] = TRUE;
+				$video_name = $date.$_FILES['fileupload']['name'];
+				$configVideo['file_name'] = $video_name;
+		
+				$this->load->library('upload', $configVideo);
+				$this->upload->initialize($configVideo);
+
+				if(!$this->upload->do_upload('fileupload')) {
+					// echo $this->upload->display_errors();
+				}else{
+					$videoDetails = $this->upload->data();
+					$data['video_name']= $configVideo['file_name'];
+					$data['video_detail'] = $videoDetails;
+				
+					$data['idvideo'] = $_POST['id_file'];
+					$data['namavideo'] = $_POST['nama_file'];
+					$data['kategori'] = $_POST['kategori_file'];				
+					$nmvideo = $videoDetails['file_name'];	
+					$data['namafile'] = $nmvideo;			
+					
+					$this->insert_video($data['kategori'], $data['namavideo'], $nmvideo );
+										
+					echo json_encode($data);
+				
+				}
+		
+			}else{
+				echo "Please select a file";
+			}
+		
+		
+		}else {
 			$data['idvideo'] = $_POST['id_file'];
 			$data['namavideo'] = $_POST['nama_file'];
 			$data['kategori'] = $_POST['kategori_file'];				
