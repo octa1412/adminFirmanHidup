@@ -39,6 +39,32 @@ class Video_model extends CI_Model {
 		return $query->result_array();
 	}
 
+	public function get_reply_id($id = NULL) {
+		$this->db->select('*');
+        $this->db->from('reply_doa');
+        if($id != NULL){
+			$this->db->where('id_ruang_doa', $id);			
+        }
+		$query = $this->db->get();
+		return $query->result_array();
+	}
+
+	public function get_video_doa($email = NULL, $start = NULL) {
+		$this->db->select('*');
+		$this->db->from('ruang_doa');	
+
+		if($start != NULL){
+			$this->db->limit(4, $start);	
+		}
+        if($email != NULL){
+            $this->db->where('email', $email);
+		}
+		$this->db->order_by('id_ruang_doa','desc');
+
+		$query = $this->db->get();
+		return $query->result_array();
+	}
+
 	public function get_data_error_log($orderby = NULL, $sort = "asc", $limit = NULL){
 		$this->db->select('*');
 		$this->db->from('error_log');
@@ -56,6 +82,26 @@ class Video_model extends CI_Model {
 	//INSERT DATABASE
 	public function insert_video($data){
         $this->db->insert('video', $data);
+        if ($this->db->affected_rows() > 0 ) {
+			$return_message = 'success';
+		}else{
+			$return_message = 'failed';
+		}
+		return $return_message;
+	}
+
+	public function insert_video_doa($data){
+        $this->db->insert('ruang_doa', $data);
+        if ($this->db->affected_rows() > 0 ) {
+			$return_message = 'success';
+		}else{
+			$return_message = 'failed';
+		}
+		return $return_message;
+	}
+
+	public function insert_reply_doa($data){
+        $this->db->insert('reply_doa', $data);
         if ($this->db->affected_rows() > 0 ) {
 			$return_message = 'success';
 		}else{
@@ -95,9 +141,13 @@ class Video_model extends CI_Model {
 
 	public function update_category($where, $data){
 		$this->db->where($where);
-        $this->db->update('video', $data);
+        $this->db->update('kategori', $data);
 	}
 
+	public function update_video_doa($where, $data){
+		$this->db->where($where);
+        $this->db->update('ruang_doa', $data);
+	}
 
 	//DELETE DATABASE
 	public function delete($id){
@@ -109,6 +159,25 @@ class Video_model extends CI_Model {
 
 		// $this->db->delete('video');
 		$this->db->delete('video', array('IdVideo' => $id));
+
+		if ($this->db->affected_rows() > 0 ) {
+			$return_message = 'success';
+		}else{
+			$return_message = 'failed';
+		}
+		return $return_message;
+	}
+
+	//DELETE DATABASE
+	public function delete_ruang_doa($id){
+		$this->db->where('id_ruang_doa', $id);
+		$query = $this->db->get('reply_doa');
+		$row = $query->row();
+	
+		unlink("./upload/reply_ruang_doa/$row->video");
+
+		// $this->db->delete('video');
+		$this->db->delete('reply_doa', array('id_ruang_doa' => $id));
 
 		if ($this->db->affected_rows() > 0 ) {
 			$return_message = 'success';

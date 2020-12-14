@@ -110,7 +110,7 @@
                                                 
                                             </div>
                                             <div class="col-auto">
-                                                <button type="submit" class="btn btn-primary" id="addkategori">Tambah</button>
+                                                <button type="button" class="btn btn-primary" id="addkategori">Tambah</button>
                                             </div>
                                                 </form>
                                         </div>
@@ -288,15 +288,31 @@
                             type: 'POST',
                             data: {id:inputid, nama:inputnama},
                             success: function (json) {
-                                alert('Data Berhasil Diupdate!');                               
-                                window.location = "<?php echo base_url() ?>index.php/dashboardadmin";
+                                // alert('Data Berhasil Diupdate!');                               
+                                // window.location = "<?php echo base_url() ?>index.php/dashboardadmin";
 
                             },
                             error: function () {
                                 console.log("gagal update");
                                 alert('Data gagal diinputkan!');
                             }
-                        });						
+                        });	
+
+						$.ajax({
+                            url: "https://cmcsurabaya.org/admintesting/api_alkitab/aksi.php?act=update_kategori",
+                            type: 'POST',
+                            data: {id:inputid, nama:inputnama},
+                            success: function (json) {
+                                alert('Data Berhasil Diupdate!');                               
+                                window.location = "<?php echo base_url() ?>index.php/kategoriadmin";
+
+                            },
+                            error: function () {
+                                console.log("gagal update");
+                                alert('Data gagal diinputkan!');
+                            }
+                        });	
+
 					});					
 				})                
 			},
@@ -316,6 +332,22 @@
 				data: {id: id},
 				success: function (response) {
 					alert('Data Berhasil Dihapus!');
+					// window.location = "<?php echo base_url() ?>index.php/kategoriadmin";
+				},
+				error: function () {
+					console.log("gagal menghapus");
+					alert('Data gagal Dihapus!');
+
+
+				}
+			});
+
+			$.ajax({
+				url: "https://cmcsurabaya.org/admintesting/api_alkitab/aksi.php?act=delete_kategori",
+				type: 'POST',
+				data: {id: id},
+				success: function (response) {
+					// alert('Data api Dihapus!');
 					window.location = "<?php echo base_url() ?>index.php/kategoriadmin";
 				},
 				error: function () {
@@ -338,9 +370,23 @@
                 type: 'POST',
                 data: {id:inputnama},
                 success: function (json) {
+                    // alert('Data Berhasil Ditambahkan!');                   
+                    // // window.location = "<?php echo base_url() ?>index.php/kategoriadmin";
+
+                },
+                error: function () {
+                    console.log("gagal update");
+                    alert('Data gagal diinputkan!');
+                }
+            });
+
+			$.ajax({
+                url: "https://cmcsurabaya.org/admintesting/api_alkitab/aksi.php?act=tambah_kategori",
+                type: 'POST',
+				data: {nama:inputnama},
+                success: function (json) {
                     alert('Data Berhasil Ditambahkan!');                   
                     window.location = "<?php echo base_url() ?>index.php/kategoriadmin";
-
                 },
                 error: function () {
                     console.log("gagal update");

@@ -1,5 +1,10 @@
 <?php
-
+header( "Access-Control-Allow-Origin: *");
+header( "Access-Control-Allow-Credentials: true" );
+header( "Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS" );
+header( "Access-Control-Max-Age: 604800" );
+header( "Access-Control-Request-Headers: x-requested-with" );
+header( "Access-Control-Allow-Headers: x-requested-with, x-requested-by" );
 // include_once ("Loadview.php");
 
 class Default_controller extends CI_Controller {
@@ -30,7 +35,17 @@ class Default_controller extends CI_Controller {
 		}
 	}
 
-	//Dashboard
+	//reply detail
+	public function replyvideodetail(){
+		if ($this->checkcookieadmin()) {
+			$this->load->view('admin/reply_video_detail');
+		}else{
+			header("Location: ".base_url()."index.php/loginadmin");
+			die();
+		}
+	}
+
+	//kategori
 	public function kategoriadmin(){
 		if ($this->checkcookieadmin()) {
 			$this->load->view('admin/kategori');
@@ -97,7 +112,7 @@ class Default_controller extends CI_Controller {
 			echo json_encode($data);
 		}
 	}
-
+	
 	//ambil data kategori
 	//parameter 1: true bila ingin return array, kosongi bila ingin Json
 	public function get_all_kategori($return_var = NULL){
@@ -153,6 +168,35 @@ class Default_controller extends CI_Controller {
 		}else{
 			echo json_encode($data);
 		}
+	}
+
+	
+	//ambil data user berdasarkan username (untuk siapin data reply ke user cmc)
+	//note: ambil data user dari database berdasarkan username
+	public function get_reply($return_var = NULL){
+		$id = $this->input->post('id');
+		$data = $this->Video_model->get_reply_id($id);
+		if (empty($data)){
+			$data = [];
+		}
+		if ($return_var == true) {
+			return $data;
+		}else{
+			echo json_encode($data);
+		}
+	}
+
+	public function test(){
+		// $id = $_GET["https://firmanhidup.org/adminvideo/index.php/get_all_kategori"];
+
+		// echo json_encode($id);
+
+		$content =     file_get_contents("https://firmanhidup.org/adminvideo/index.php/get_all_kategori");
+
+		$result  = json_decode($content);
+
+		print_r( $result );
+
 	}
 	
 
@@ -222,7 +266,47 @@ class Default_controller extends CI_Controller {
 			echo "access denied";
 		}
 	}
+
+			
+	// Tambah reply ruang doa 
+	public function insert_reply_doa() {
+
+		if (isset($_FILES['file_1']['name']) && $_FILES['file_1']['name'] != '') {
+			unset($config);
+			$date = date("ymd");
+			$tgl_daftar = date("y-m-d");
+			$configVideo['upload_path'] = './upload/reply_ruang_doa';
+			$configVideo['max_size'] = '60000';
+			$configVideo['allowed_types'] = 'avi|flv|wmv|mp3|mp4';
+			$configVideo['overwrite'] = FALSE;
+			$configVideo['remove_spaces'] = TRUE;
+			$video_name = $date.$_FILES['file_1']['name'];
+			$configVideo['file_name'] = $video_name;
+	
+			$this->load->library('upload', $configVideo);
+			$this->upload->initialize($configVideo);
+
+			if(!$this->upload->do_upload('file_1')) {
+				// echo $this->upload->display_errors();
+			}else{
+				$videoDetails = $this->upload->data();
+				$data['video_name']= $configVideo['file_name'];
+				$data['video_detail'] = $videoDetails;
+				$data['namafile'] = $videoDetails['file_name'];			
+						
+				$data = array(
+					'id_ruang_doa' => $_POST['id'],
+					'video' => $videoDetails['file_name']
+				);
 		
+				$insertStatus = $this->Video_model->insert_reply_doa($data);
+			
+			}
+	
+		}
+		
+		echo $insertStatus;
+	}
 
 	//UPDATE
 
@@ -297,8 +381,9 @@ class Default_controller extends CI_Controller {
 					$data['namafile'] = $nmvideo;			
 					
 					$this->update_video($data['idvideo'], $data['kategori'], $data['namavideo'], $nmvideo );
-										
-					echo json_encode($data);
+						
+
+					echo json_encode($nmvideo);
 				
 				}
 		
@@ -336,7 +421,9 @@ class Default_controller extends CI_Controller {
 					
 					$this->insert_video($data['kategori'], $data['namavideo'], $nmvideo );
 										
-					echo json_encode($data);
+					
+
+					echo json_encode($nmvideo);
 				
 				}
 		
@@ -390,6 +477,17 @@ class Default_controller extends CI_Controller {
 		}
 	}
 
+	//Update data status reply ruang doa
+	public function update_video_doa(){
+		$data = array(
+			'status_reply' => $this->input->post('status'),
+		);
+		
+		$where= array('id_ruang_doa' => $this->input->post('id') );
+		$this->Video_model->update_video_doa($where, $data);
+	
+	}
+
 	
 	//DELETE
 
@@ -411,6 +509,18 @@ class Default_controller extends CI_Controller {
 		if ($this->checkcookieadmin()) {
 			$id = $this->input->post('id');;
 			$deleteStatus = $this->Video_model->delete($id);
+			
+			echo $deleteStatus;
+		}else{
+			echo "access denied";
+		}
+	}
+
+	// delete video
+	public function delete_video_ruang_doa(){
+		if ($this->checkcookieadmin()) {
+			$id = $this->input->post('id');;
+			$deleteStatus = $this->Video_model->delete_ruang_doa($id);
 			
 			echo $deleteStatus;
 		}else{
