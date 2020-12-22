@@ -100,7 +100,7 @@
 							<a class="nav-link dropdown-toggle" href="#" id="title_item" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							</a>
 							<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
-								<a class="dropdown-header" href="#" id="item_notif" style="display:none">									
+								<a class="dropdown-header" href="<?=base_url("index.php/replyvideodetail");?>" id="item_notif" style="display:none">									
 								</a>								
 								<a class="dropdown-item text-center small text-gray-500" href="#" id="item_none" style="display:none">Tidak ada permintaan</a>
 							</div>
@@ -328,7 +328,7 @@
 					
 					if(status == '0'){
 						dTable.row.add([
-						'<video id="getvideo'+ no +'" width="400" controls src="#"> </video>',
+						'<video id="getvideo'+ no +'" height="300" width="auto" controls src="'+ link +'"> </video>',
 						namauser,
 						'<p style="color:orange;"><i class="fa fa-clock"></i>&nbsp;Belum dibalas</p>',
 						'<button class="btn btn-outline-success mt-10 mb-10" onclick=tampildata("'+ no +'")>Reply</button><br>'
@@ -337,7 +337,7 @@
 
 					} else {
 						dTable.row.add([
-						'<video id="getvideo'+ no +'" width="400" controls src="#"> </video>',
+						'<video id="getvideo'+ no +'" height="300" width="auto" controls src="'+ link +'"> </video>',
 						namauser,
 						'<p style="color:green;"><i class="fa fa-check-circle"></i>&nbsp;Sudah dibalas</p>',
 						'<button class="btn btn-outline-info mt-10 mb-10" onclick=detaildata("'+ no +'")>Detail</button><br>'

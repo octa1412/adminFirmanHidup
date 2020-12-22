@@ -18,8 +18,9 @@ class Video_model extends CI_Model {
 
     public function get_video($id = NULL) {
 		$this->db->select('*');
-		$this->db->join('kategori','kategori.IdKategori = video.IdKategori');
-		$this->db->from('video');		
+		$this->db->from('kategori');		
+		$this->db->join('video','video.IdKategori = kategori.IdKategori');
+		$this->db->join('thumbnail','thumbnail.id_gambar = video.id_gambar');
         if($id != NULL){
             $this->db->where('kategori.IdKategori', $id);
 		}

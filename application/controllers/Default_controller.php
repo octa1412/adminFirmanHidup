@@ -30,7 +30,7 @@ class Default_controller extends CI_Controller {
 		if ($this->checkcookieadmin()) {
 			$this->load->view('admin/dashboard');
 		}else{
-			header("Location: ".base_url()."index.php/loginadmin");
+			header("Location: ".base_url()."index.php");
 			die();
 		}
 	}
@@ -40,7 +40,7 @@ class Default_controller extends CI_Controller {
 		if ($this->checkcookieadmin()) {
 			$this->load->view('admin/reply_video_detail');
 		}else{
-			header("Location: ".base_url()."index.php/loginadmin");
+			header("Location: ".base_url()."index.php");
 			die();
 		}
 	}

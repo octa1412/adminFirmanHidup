@@ -101,7 +101,7 @@
 							<a class="nav-link dropdown-toggle" href="#" id="title_item" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							</a>
 							<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
-								<a class="dropdown-header" href="#" id="item_notif" style="display:none">									
+								<a class="dropdown-header" href="<?=base_url("index.php/replyvideodetail");?>" id="item_notif" style="display:none">									
 								</a>								
 								<a class="dropdown-item text-center small text-gray-500" href="#" id="item_none" style="display:none">Tidak ada permintaan</a>
 							</div>
@@ -235,16 +235,23 @@
               	<div class="modal-body">
 					<form onsubmit="insertvideo(event)">
 						<div class="form-group">
-							<label for="kategori" class="col-form-label">Kategori</label>
+							<label for="kategori" class="col-form-label"><b>Kategori</b></label>
 							<select class="custom-select" id="kategori" name="kategori" required>
 								<option value="default">Kategori</option>   
 							</select>
 						</div>
 						
 						<div class="form-group">
-							<label for="nama_video" class="col-form-label">Nama Video</label>
+							<label for="nama_video" class="col-form-label"><b>Nama Video</b></label>
 							<input type="text" class="form-control" id="namavideo" name="namavideo" placeholder="Nama Video..." required>
 						</div>      
+
+						<div class="form-group">
+							<label for="foto_video" class="col-form-label"><b>Thumbnail Video</b></label><br>
+							<span>*Foto Video akan diambil secara acak dari video jika poin ini tidak diisi</span><br><br>
+							<input id="inputFileToLoad" type="file" onchange="encodeImageFileAsURL();" />
+							<div id="imgTest" width="auto" height="400"></div>
+						</div>
 
 						<div class="form-group">
 							<label for="video">Upload Video</label><br>
@@ -294,10 +301,12 @@
 								<option value="default">Kategori</option>   
 							</select>
 						</div>
+
 						<div class="form-group">
 							<label for="ed-nama-video" class="col-form-label">Nama Video</label>
 							<input type="text" class="form-control" id="ed-nama-video" required>
 						</div>
+						
 						<div class="form-group" id="divupload">
 							<label for="ed-upload">Upload Video</label><br>
 							<input type="file" accept="video/*" id="ed-upload" name="ed-upload">
@@ -353,11 +362,13 @@
 
 	var Element = document.getElementById('video'); 
     var imgs = document.getElementById('launch'); 
+	
     Element.addEventListener('change', function() { 
 		var url = URL.createObjectURL(Element.files[0]); 
 		imgs.src = url; 
-		// console.log(url); 
-		// console.log('aaaa ' ,imgs);
+		console.log(Element);
+		console.log(url); 
+		console.log('aaaa ' ,imgs);
 
 	}); 
 
@@ -813,6 +824,29 @@
 			}
 		});
 
+	}
+
+
+	function encodeImageFileAsURL() {
+
+		var filesSelected = document.getElementById("inputFileToLoad").files;
+		if (filesSelected.length > 0) {
+			var fileToLoad = filesSelected[0];
+
+			var fileReader = new FileReader();
+
+			fileReader.onload = function(fileLoadedEvent) {
+				var srcData = fileLoadedEvent.target.result; // <--- data: base64
+
+				var newImage = document.createElement('img');
+				newImage.src = srcData;
+
+				document.getElementById("imgTest").innerHTML = newImage.outerHTML;
+				alert("Converted Base64 version is " + document.getElementById("imgTest").innerHTML);
+				console.log("Converted Base64 version is " + document.getElementById("imgTest").innerHTML);
+			}
+			fileReader.readAsDataURL(fileToLoad);
+		}
 	}
 
 
