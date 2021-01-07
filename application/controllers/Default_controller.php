@@ -55,6 +55,16 @@ class Default_controller extends CI_Controller {
 		}
 	}
 
+	//kategori
+	public function komentarvideo(){
+		if ($this->checkcookieadmin()) {
+			$this->load->view('admin/komentar_video');
+		}else{
+			header("Location: ".base_url()."index.php/loginadmin");
+			die();
+		}
+	}
+
 	
 	//GET DATA
 
@@ -155,6 +165,30 @@ class Default_controller extends CI_Controller {
 		}
 	}
 
+	//ambil data Video dengan batasan limit (khusus user)
+	//parameter 1: true bila ingin return array, kosongi bila ingin Json
+	public function get_all_video_limit($return_var = NULL){
+		$id = $this->input->post('id');
+		$start = $this->input->post('start');
+		$kategori = $this->input->post('kategori');
+
+		
+		// if($kategori != Null){
+			$data = $this->Video_model->get_video_limit($id, $kategori, $start);
+		// } else {
+		// 	$data = $this->Video_model->get_video_limit();
+		// }
+				
+		if (empty($data)){
+			$data = [];
+		}
+		if ($return_var == true) {
+			return $data;
+		}else{
+			echo json_encode($data);
+		}
+	}
+
 	//ambil data user berdasarkan username
 	//note: ambil data user dari database berdasarkan username
 	public function get_video_by_id($return_var = NULL){
@@ -234,16 +268,19 @@ class Default_controller extends CI_Controller {
 	}
 
 	// Tambah video 
-	public function insert_video($kategori, $nama, $video) {
+	public function insert_video($kategori, $nama, $video, $gambar) {
 		if ($this->checkcookieadmin()) {
 			$idktgr = $kategori;
 			$nama = $nama;
 			$video = $video;
 
 			$data = array(
-				'IdKategori' => $idktgr,
-				'NamaVideo' => $nama,
-				'SourceVideo' => $video
+				'id_kategori' => $idktgr,
+				'nama_video' => $nama,
+				'source_video' => $video,
+				'source_gambar' => $gambar,
+				'jml_view' => '0',
+				'jml_like' => '0',
 			);
 			$insertStatus = $this->Video_model->insert_video($data);
 			echo $insertStatus;
@@ -258,7 +295,7 @@ class Default_controller extends CI_Controller {
 			$nama = $this->input->post('id');
 
 			$data = array(
-				'NamaKategori' => $nama
+				'nama_kategori' => $nama
 			);
 			$insertStatus = $this->Video_model->insert_kategori($data);
 			echo $insertStatus;
@@ -346,12 +383,12 @@ class Default_controller extends CI_Controller {
 		if($_POST['id_file'] == "none"){			
 		} else {
 			$datalama = $this->Video_model->get_video_id($_POST['id_file']);
-			$videolama = $datalama[0]['SourceVideo'];
+			$videolama = $datalama[0]['source_video'];
 		}
 		
 
 		if($_POST['status'] == "1"){			
-			unlink('./upload/videos/'.$datalama[0]['SourceVideo']);
+			unlink('./upload/videos/'.$datalama[0]['source_video']);
 
 			if (isset($_FILES['fileupload']['name']) && $_FILES['fileupload']['name'] != '') {
 				unset($config);
@@ -382,7 +419,6 @@ class Default_controller extends CI_Controller {
 					
 					$this->update_video($data['idvideo'], $data['kategori'], $data['namavideo'], $nmvideo );
 						
-
 					echo json_encode($nmvideo);
 				
 				}
@@ -419,7 +455,7 @@ class Default_controller extends CI_Controller {
 					$nmvideo = $videoDetails['file_name'];	
 					$data['namafile'] = $nmvideo;			
 					
-					$this->insert_video($data['kategori'], $data['namavideo'], $nmvideo );
+					$this->insert_video($data['kategori'], $data['namavideo'], $nmvideo, $_POST['src_gambar']);
 										
 					
 
@@ -446,12 +482,12 @@ class Default_controller extends CI_Controller {
 	public function update_video($id, $kategori, $nama, $video){
 		if ($this->checkcookieadmin()) {
 			$data = array(
-				'NamaVideo' => $nama,
-				'IdKategori' => $kategori,
-				'SourceVideo' => $video
+				'nama_video' => $nama,
+				'id_kategori' => $kategori,
+				'source_video' => $video
 			);
 			
-			$where= array('IdVideo' => $id );
+			$where= array('id_video' => $id );
 			$this->Video_model->update($where, $data);
 		}else{
 			echo "access denied";
@@ -465,10 +501,10 @@ class Default_controller extends CI_Controller {
 			$nama = $this->input->post('nama');
 	
 			$data = array(
-				'NamaKategori' => $nama,
+				'nama_kategori' => $nama,
 			);
 			
-			$where= array('IdKategori' => $id );
+			$where= array('id_kategori' => $id );
 			$this->Video_model->update_category($where, $data);
 
 			echo "acceptt";
@@ -485,6 +521,28 @@ class Default_controller extends CI_Controller {
 		
 		$where= array('id_ruang_doa' => $this->input->post('id') );
 		$this->Video_model->update_video_doa($where, $data);
+	
+	}
+
+	//Update data jml view
+	public function update_jml_view(){
+		$data = array(
+			'jml_view' => $this->input->post('jml'),
+		);
+		
+		$where= array('id_video' => $this->input->post('id') );
+		$this->Video_model->update($where, $data);
+	
+	}
+
+	//Update data jml like
+	public function update_jml_like(){
+		$data = array(
+			'jml_like' => $this->input->post('jml'),
+		);
+		
+		$where= array('id_video' => $this->input->post('id') );
+		$this->Video_model->update($where, $data);
 	
 	}
 
@@ -567,6 +625,15 @@ class Default_controller extends CI_Controller {
 		}
 	}
 
+	//buat id komentar
+	//note: -
+	//input: form POST seperti di bawah
+	//Output: berhasil login / gagal login
+	public function cekidkoment(){
+		$id = $this->input->post('id');
+		$this->create_cookie_encrypt("idKomentCookie",$id);
+	}
+
 
 	//Check cookie
 	//note: tidak untuk front end
@@ -582,6 +649,23 @@ class Default_controller extends CI_Controller {
 		}else{
 			return false;
 		}
+	}
+
+	//Check cookie id komentar
+	//note: tidak untuk front end
+	public function checkcookieComment(){
+		$this->load->helper('cookie');
+		if ($this->input->cookie('idKomentCookie',true)!=NULL) {
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	//untuk mengambil id komentar dr cookie
+	public function get_decrypt(){
+		$id = $this->get_cookie_decrypt("idKomentCookie");		
+		echo $id;
 	}
 
 	//Logout
@@ -695,16 +779,28 @@ class Default_controller extends CI_Controller {
 		return $s;
 	}
 
-	public function convert_file_image(){
-		$image = $this->input->post('data');
-		$image_name = 'asd';
-		$filename = $image_name . '.' . 'png';
-		$path = ('upload/');
+	// public function convert_file_image(){
+	// 	$image = $this->input->post('data');
+	// 	$image_name = 'asd';
+	// 	$filename = $image_name . '.' . 'png';
+	// 	$path = ('upload/');
 
-		//image uploading folder path
-		file_put_contents($path . $filename, file_get_contents($image));
+	// 	//image uploading folder path
+	// 	file_put_contents($path . $filename, file_get_contents($image));
 
-		echo $image;
+	// 	echo $image;
+	// }
+
+	public function convert_base(){
+		$img = $_POST['img']; // Your data 'data:image/png;base64,AAAFBfj42Pj4';
+		$base = $_POST['base'];
+		$nama = $_POST['nama'];
+		$img = str_replace($base, '', $img);
+		$img = str_replace(' ', '+', $img);
+		$data = base64_decode($img);
+		file_put_contents('C:/xampp/htdocs/adminvideo/upload/thumbnail/'.$nama , $data);
+		// echo $img;
+		
 	}
 
 	

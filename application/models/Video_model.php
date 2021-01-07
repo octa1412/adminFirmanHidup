@@ -10,7 +10,7 @@ class Video_model extends CI_Model {
         $this->db->select('*');
 		$this->db->from('kategori');
 		if ($id != NULL){
-			$this->db->where('IdKategori',$id);
+			$this->db->where('id_kategori',$id);
 		}
 		$query = $this->db->get();
 		return $query->result_array();
@@ -18,24 +18,44 @@ class Video_model extends CI_Model {
 
     public function get_video($id = NULL) {
 		$this->db->select('*');
-		$this->db->from('kategori');		
-		$this->db->join('video','video.IdKategori = kategori.IdKategori');
-		$this->db->join('thumbnail','thumbnail.id_gambar = video.id_gambar');
+		$this->db->join('kategori','kategori.id_kategori = video.id_kategori');
+		$this->db->from('video');		
         if($id != NULL){
-            $this->db->where('kategori.IdKategori', $id);
+            $this->db->where('kategori.id_kategori', $id);
 		}
-		$this->db->order_by('video.IdVideo','desc');
+		$this->db->order_by('video.id_video','desc');
 		$query = $this->db->get();
 		return $query->result_array();
 	}
 
 	public function get_video_id($id = NULL) {
 		$this->db->select('*');
-		$this->db->join('kategori','kategori.IdKategori = video.IdKategori');
+		$this->db->join('kategori','kategori.id_kategori = video.id_kategori');
         $this->db->from('video');
         if($id != NULL){
-			$this->db->where('video.IdVideo', $id);			
+			$this->db->where('video.id_video', $id);			
         }
+		$query = $this->db->get();
+		return $query->result_array();
+	}
+
+	public function get_video_limit($id = NULL, $kategori = NULL, $start = NULL) {
+		$this->db->select('*');
+		$this->db->join('kategori','kategori.id_kategori = video.id_kategori');
+		$this->db->from('video');	
+
+		if($start != NULL){
+			$this->db->limit(4, $start);
+		}	
+		if($id != NULL){
+			$this->db->where('video.id_video', $id);			
+        }
+		if($kategori != NULL){
+            $this->db->where('kategori.id_kategori', $kategori);
+		}
+
+		$this->db->order_by('id_video','desc');
+
 		$query = $this->db->get();
 		return $query->result_array();
 	}
@@ -152,14 +172,14 @@ class Video_model extends CI_Model {
 
 	//DELETE DATABASE
 	public function delete($id){
-		$this->db->where('IdVideo', $id);
+		$this->db->where('id_video', $id);
 		$query = $this->db->get('video');
 		$row = $query->row();
 	
-		unlink("./upload/videos/$row->SourceVideo");
+		unlink("./upload/videos/$row->source_video");
 
 		// $this->db->delete('video');
-		$this->db->delete('video', array('IdVideo' => $id));
+		$this->db->delete('video', array('id_video' => $id));
 
 		if ($this->db->affected_rows() > 0 ) {
 			$return_message = 'success';
@@ -189,7 +209,7 @@ class Video_model extends CI_Model {
 	}
 
 	public function delete_kategori($id){
-		$this->db->where('IdKategori', $id);
+		$this->db->where('id_kategori', $id);
 		$this->db->delete('kategori');
 		if ($this->db->affected_rows() > 0 ) {
 			$return_message = 'success';
