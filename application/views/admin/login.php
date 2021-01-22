@@ -5,7 +5,9 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<title>BEKKO</title>
+	<title>App Alkitab</title>
+	
+	<link href="<?=base_url("dist/img/logo.png");?>" rel="icon">
 
 	<!-- Custom fonts for this template -->
 	<link href="<?=base_url("dist/vendor/fontawesome-free/css/all.min.css");?>" rel="stylesheet" type="text/css">

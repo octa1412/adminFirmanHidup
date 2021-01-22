@@ -163,7 +163,7 @@ class Default_controller extends CI_Controller {
 		}else{
 			echo json_encode($data);
 		}
-	}
+	} 
 
 	//ambil data Video dengan batasan limit (khusus user)
 	//parameter 1: true bila ingin return array, kosongi bila ingin Json
@@ -281,6 +281,7 @@ class Default_controller extends CI_Controller {
 				'source_gambar' => $gambar,
 				'jml_view' => '0',
 				'jml_like' => '0',
+				'jml_comment' => '0',
 			);
 			$insertStatus = $this->Video_model->insert_video($data);
 			echo $insertStatus;
@@ -292,10 +293,34 @@ class Default_controller extends CI_Controller {
 	//tambah kategori
 	public function insert_kategori() {
 		if ($this->checkcookieadmin()) {
-			$nama = $this->input->post('id');
+			$nama = $_POST['nama'];
+			$date = date("ymd");
+			$file1 = '';
+
+			if (isset($_FILES['file_1']['name']) && $_FILES['file_1']['name'] != '') {
+				$configVideo['upload_path'] = './upload/foto_kategori';
+				$configVideo['max_size'] = '60000';
+				$configVideo['allowed_types'] = 'gif|jpg|png';
+				$configVideo['overwrite'] = FALSE;
+				$configVideo['remove_spaces'] = TRUE;
+				$video_name = $date.'_foto_kategori_'.$_POST['nama'];
+				$configVideo['file_name'] = $video_name;
+		
+				$this->load->library('upload', $configVideo);
+				$this->upload->initialize($configVideo);
+	
+				if(!$this->upload->do_upload('file_1')) {
+					// echo $this->upload->display_errors();
+				}else{
+					$videoDetails = $this->upload->data();		
+					$file1 = $videoDetails['file_name'];			
+				}
+				
+			}
 
 			$data = array(
-				'nama_kategori' => $nama
+				'nama_kategori' => $nama,
+				'src_gambar' => $file1
 			);
 			$insertStatus = $this->Video_model->insert_kategori($data);
 			echo $insertStatus;
@@ -383,11 +408,17 @@ class Default_controller extends CI_Controller {
 		if($_POST['id_file'] == "none"){			
 		} else {
 			$datalama = $this->Video_model->get_video_id($_POST['id_file']);
-			$videolama = $datalama[0]['source_video'];
+			$videolama = $datalama[0]['source_video'];			
+			$gambarlama = $datalama[0]['source_gambar'];
 		}
-		
 
-		if($_POST['status'] == "1"){			
+		if($_POST['status_gmbr'] == '1'){			
+			// unlink('./upload/videos/'.$gambarlama);
+			$this->Video_model->delete_file_thumbnail($gambarlama);
+		}
+		 
+
+		if($_POST['status'] == "1"){ // edit with video change
 			unlink('./upload/videos/'.$datalama[0]['source_video']);
 
 			if (isset($_FILES['fileupload']['name']) && $_FILES['fileupload']['name'] != '') {
@@ -417,7 +448,7 @@ class Default_controller extends CI_Controller {
 					$nmvideo = $videoDetails['file_name'];	
 					$data['namafile'] = $nmvideo;			
 					
-					$this->update_video($data['idvideo'], $data['kategori'], $data['namavideo'], $nmvideo );
+					$this->update_video($data['idvideo'], $data['kategori'], $data['namavideo'], $nmvideo, $_POST['src_gambar'] );
 						
 					echo json_encode($nmvideo);
 				
@@ -427,7 +458,7 @@ class Default_controller extends CI_Controller {
 				echo "Please select a file";
 			}
 
-		} else if($_POST['status'] == "2"){ 
+		} else if($_POST['status'] == "2"){  //add file
 			if (isset($_FILES['fileupload']['name']) && $_FILES['fileupload']['name'] != '') {
 				unset($config);
 				$date = date("ymd");
@@ -455,38 +486,43 @@ class Default_controller extends CI_Controller {
 					$nmvideo = $videoDetails['file_name'];	
 					$data['namafile'] = $nmvideo;			
 					
-					$this->insert_video($data['kategori'], $data['namavideo'], $nmvideo, $_POST['src_gambar']);
-										
-					
-
-					echo json_encode($nmvideo);
-				
+					$this->insert_video($data['kategori'], $data['namavideo'], $nmvideo, $_POST['src_gambar']);										
+					echo json_encode($nmvideo);				
 				}
-		
+
 			}else{
 				echo "Please select a file";
-			}
-		
+			}		
 		
 		}else {
 			$data['idvideo'] = $_POST['id_file'];
 			$data['namavideo'] = $_POST['nama_file'];
 			$data['kategori'] = $_POST['kategori_file'];				
+			$temp = $_POST['src_gambar'];;
 
-			$this->update_video($data['idvideo'], $data['kategori'], $data['namavideo'], $videolama );
+			$this->update_video($data['idvideo'], $data['kategori'], $data['namavideo'], $videolama, $temp );
 		}
 
 	}
 
 	//Update data video ke database
-	public function update_video($id, $kategori, $nama, $video){
+	public function update_video($id, $kategori, $nama, $video, $gambar){
 		if ($this->checkcookieadmin()) {
-			$data = array(
-				'nama_video' => $nama,
-				'id_kategori' => $kategori,
-				'source_video' => $video
-			);
-			
+			if($gambar != ''){
+				$data = array(
+					'nama_video' => $nama,
+					'id_kategori' => $kategori,
+					'source_video' => $video,
+					'source_gambar' => $gambar
+				);
+
+			} else {
+				$data = array(
+					'nama_video' => $nama,
+					'id_kategori' => $kategori,
+					'source_video' => $video
+				);
+			}
 			$where= array('id_video' => $id );
 			$this->Video_model->update($where, $data);
 		}else{
@@ -497,17 +533,45 @@ class Default_controller extends CI_Controller {
 	// update kategori
 	public function update_kategori(){
 		if ($this->checkcookieadmin()) {
-			$id = $this->input->post('id');
-			$nama = $this->input->post('nama');
+			$id = $_POST['id'];
+			$nama = $_POST['nama'];
+			$file1 = $_POST['file_before_1'];
+			$date = date("ymd");
+
+			
+			if($_POST['status_jenis_1'] == '1') {
+				$configVideo['upload_path'] = './upload/foto_kategori';
+				$configVideo['max_size'] = '60000';
+				$configVideo['allowed_types'] = 'gif|jpg|png';
+				$configVideo['overwrite'] = FALSE;
+				$configVideo['remove_spaces'] = TRUE;
+				$video_name = $date.'_foto_kategori_'.$_POST['nama'];
+				$configVideo['file_name'] = $video_name;
+		
+				$this->load->library('upload', $configVideo);
+				$this->upload->initialize($configVideo);
+	
+				if(!$this->upload->do_upload('file_1')) {
+					// echo $this->upload->display_errors();
+				}else{
+					$videoDetails = $this->upload->data();	
+					$this->Video_model->delete_file_kategori($file1);
+					$file1 = $videoDetails['file_name'];		
+				}				
+			}
+
+
+
 	
 			$data = array(
 				'nama_kategori' => $nama,
+				'src_gambar' => $file1
 			);
 			
 			$where= array('id_kategori' => $id );
 			$this->Video_model->update_category($where, $data);
 
-			echo "acceptt";
+			echo "acceptt".$file1;
 		}else{
 			echo "access denied";
 		}
@@ -546,6 +610,19 @@ class Default_controller extends CI_Controller {
 	
 	}
 
+	//Update data jml cooment
+	public function update_jml_comment(){
+		$data = array(
+			'jml_comment' => $this->input->post('jml'),
+		);
+		
+		$where= array('id_video' => $this->input->post('id') );
+		$this->Video_model->update($where, $data);
+
+		// echo $this->input->post('jml');
+	
+	}
+
 	
 	//DELETE
 
@@ -574,7 +651,7 @@ class Default_controller extends CI_Controller {
 		}
 	}
 
-	// delete video
+	// delete video ruang doa
 	public function delete_video_ruang_doa(){
 		if ($this->checkcookieadmin()) {
 			$id = $this->input->post('id');;
@@ -590,9 +667,27 @@ class Default_controller extends CI_Controller {
 	public function delete_kategori(){
 		if ($this->checkcookieadmin()) {
 			$id = $this->input->post('id');;
-			$deleteStatus = $this->Video_model->delete_kategori($id);
+			// $data = array();
+
+			$deletevideo = $this->Video_model->get_video($id); //id video dgn kategori yg dihapus
+
+			for($i=0; $i<count($deletevideo); $i++){				
+				// array_push($data,$deletevideo[$i]['id_video']);
+				
+				$data = array(
+					'id_kategori' => '0',
+				);
+				
+				$where= array('id_video' => $deletevideo[$i]['id_video'] );
+				$this->Video_model->update($where, $data);
+				
+			}
+
 			
-			echo $deleteStatus;
+			$deleteStatus = $this->Video_model->delete_kategori($id);
+
+			echo json_encode($data);
+
 		}else{
 			echo "access denied";
 		}
@@ -798,9 +893,14 @@ class Default_controller extends CI_Controller {
 		$img = str_replace($base, '', $img);
 		$img = str_replace(' ', '+', $img);
 		$data = base64_decode($img);
-		file_put_contents('C:/xampp/htdocs/adminvideo/upload/thumbnail/'.$nama , $data);
-		// echo $img;
+		file_put_contents($_SERVER['DOCUMENT_ROOT'].'/adminvideo/upload/thumbnail/'.$nama , $data);
+		// file_put_contents('C:/xampp/htdocs/adminvideo/upload/thumbnail/'.$nama , $data);
+		// echo 'https://firmanhidup.org/adminvideo/upload/thumbnail/';
 		
+	}
+
+	public function test_nama(){
+		echo $_SERVER['DOCUMENT_ROOT'].'/adminvideo/upload/thumbnail/';
 	}
 
 	

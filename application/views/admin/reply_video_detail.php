@@ -11,6 +11,8 @@
 	<meta name="author" content="">
 
 	<title>App Alkitab</title>
+	
+	<link href="<?=base_url("dist/img/logo.png");?>" rel="icon">
 
 	<!-- Custom fonts for this template -->
 	<link href="<?=base_url("dist/vendor/fontawesome-free/css/all.min.css");?>" rel="stylesheet" type="text/css">
@@ -308,14 +310,15 @@
 		});
 
 		$(".dataTables_empty").text("Loading...");
-		cek_mail();
+		// cek_mail();
 		   
 		$.ajax({
-			url: "https://cmcsurabaya.org/admintesting/api_alkitab/aksi.php?act=get_all_video_doa_admin",
+			url: "https://adminfirmanhidup.cmcsurabaya.org/api_alkitab/aksi.php?act=get_all_video_doa_admin",
 			type: 'POST',
 			data: {start:start, email:email},
 			success: function (json) {
 				var response = JSON.parse(json);
+				var jml = 0;
 				// console.log(response);
 				response.forEach((data)=>{
 
@@ -323,6 +326,10 @@
 					var status = data.status_reply;
 					var srcvideo = data.video;
 					no = data.id_ruang_doa;   
+
+					if(status == '0'){
+						jml = jml + 1;
+					}	
 
 					var link = "<?php echo base_url() ?>" + "upload/ruang_doa/" +srcvideo;
 					
@@ -346,6 +353,17 @@
 					}
 					
 				})
+
+				if(jml != 0){
+					document.getElementById("item_notif").innerHTML = '<i class="fas fa-file mr-2"></i> '+ jml +' Permintaan Doa Baru';
+					document.getElementById("title_item").innerHTML = '<i class="fas fa-bell fa-fw"></i><span class="badge badge-danger badge-counter">'+ jml +'</span>';
+					document.getElementById("item_notif").style.display = "block"; 
+				} else {
+					document.getElementById("item_none").style.display = "block"; 
+					document.getElementById("title_item").innerHTML = '<i class="fas fa-bell fa-fw"></i><span class="badge badge-danger badge-counter"></span>';
+				}
+
+
 			},
 			error: function (xhr, status, error) {
 			alert('Terdapat Kesalahan Pada Server...');
@@ -419,7 +437,7 @@
 		formData.append('file_1', fileupload_1);
 			
 		$.ajax({
-			url: "https://cmcsurabaya.org/admintesting/api_alkitab/aksi.php?act=update_status_reply",
+			url: "https://adminfirmanhidup.cmcsurabaya.org/api_alkitab/aksi.php?act=update_status_reply",
 			type: 'POST',
 			data: {id:inputid, status:status},
 			success: function (response) {
@@ -476,7 +494,7 @@
 		if(tanya){
 
 			$.ajax({
-				url: "https://cmcsurabaya.org/admintesting/api_alkitab/aksi.php?act=delete_video_doa",
+				url: "https://adminfirmanhidup.cmcsurabaya.org/api_alkitab/aksi.php?act=delete_video_doa",
 				type: 'POST',
 				data: {id:id},
 				success: function (response) {
@@ -509,38 +527,38 @@
 
 
 	function cek_mail(){
-		$.ajax({
-			url: "https://cmcsurabaya.org/admintesting/api_alkitab/aksi.php?act=get_all_video_doa_admin",
-			type: 'POST',
-			data: {start:start, email:email},
-			success: function (json) {
-				var response = JSON.parse(json);
-				// console.log(response);
-				var jml = 0;
-				response.forEach((data)=>{
-					var status = data.status_reply;
+		// $.ajax({
+		// 	url: "https://adminfirmanhidup.cmcsurabaya.org/api_alkitab/aksi.php?act=get_all_video_doa_admin",
+		// 	type: 'POST',
+		// 	data: {start:start, email:email},
+		// 	success: function (json) {
+		// 		var response = JSON.parse(json);
+		// 		// console.log(response);
+		// 		var jml = 0;
+		// 		response.forEach((data)=>{
+		// 			var status = data.status_reply;
 
-					if(status == '0'){
-						jml = jml + 1;
-					}							
-				})
+		// 			if(status == '0'){
+		// 				jml = jml + 1;
+		// 			}							
+		// 		})
 
-				if(jml != 0){
-					document.getElementById("item_notif").innerHTML = '<i class="fas fa-file mr-2"></i> '+ jml +' Permintaan Doa Baru';
-					document.getElementById("title_item").innerHTML = '<i class="fas fa-bell fa-fw"></i><span class="badge badge-danger badge-counter">'+ jml +'</span>';
-					document.getElementById("item_notif").style.display = "block"; 
-				} else {
-					document.getElementById("item_none").style.display = "block"; 
-					document.getElementById("title_item").innerHTML = '<i class="fas fa-bell fa-fw"></i><span class="badge badge-danger badge-counter"></span>';
-				}
+		// 		if(jml != 0){
+		// 			document.getElementById("item_notif").innerHTML = '<i class="fas fa-file mr-2"></i> '+ jml +' Permintaan Doa Baru';
+		// 			document.getElementById("title_item").innerHTML = '<i class="fas fa-bell fa-fw"></i><span class="badge badge-danger badge-counter">'+ jml +'</span>';
+		// 			document.getElementById("item_notif").style.display = "block"; 
+		// 		} else {
+		// 			document.getElementById("item_none").style.display = "block"; 
+		// 			document.getElementById("title_item").innerHTML = '<i class="fas fa-bell fa-fw"></i><span class="badge badge-danger badge-counter"></span>';
+		// 		}
 
 				
-			},
-			error: function (xhr, status, error) {
-			alert('Terdapat Kesalahan Pada Server...');
-			$("#submit").prop("disabled", false);
-			}
-		});
+		// 	},
+		// 	error: function (xhr, status, error) {
+		// 	alert('Terdapat Kesalahan Pada Server...');
+		// 	$("#submit").prop("disabled", false);
+		// 	}
+		// });
 
 	}
 

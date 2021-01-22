@@ -11,6 +11,8 @@
 	<meta name="author" content="">
 
 	<title>App Alkitab</title>
+	
+  	<link href="<?=base_url("dist/img/logo.png");?>" rel="icon">
 
 	<!-- Custom fonts for this template -->
 	<link href="<?=base_url("dist/vendor/fontawesome-free/css/all.min.css");?>" rel="stylesheet" type="text/css">
@@ -23,6 +25,58 @@
 	<link href="<?=base_url("dist/vendor/datatables/dataTables.bootstrap4.min.css");?>" rel="stylesheet">
 
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+
+	<style>
+		#overlay {
+            position: fixed;
+            display: none;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999999;
+        }
+
+        #text{
+            position: fixed;
+            top: 70%;
+            left: 50%;
+            font-size: 50px;
+            color: white;
+            transform: translate(-50%,-50%);
+            -ms-transform: translate(-50%,-50%);
+        }
+
+        .loader {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            z-index: 1;
+            width: 120px;
+            height: 120px;
+            margin: -76px 0 0 -76px;
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #3498db;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+        }
+
+        /* Safari */
+        @-webkit-keyframes spin {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+	
+	</style>
 
 </head>
 
@@ -53,14 +107,14 @@
 			</li>
 
 			<!-- Divider -->
-			<hr class="sidebar-divider">
+			<!-- <hr class="sidebar-divider"> -->
 
 			<!-- Nav Item - Dashboard -->
-			<li class="nav-item">
+			<!-- <li class="nav-item">
 				<a class="nav-link" href="<?=base_url("index.php/replyvideodetail");?>">
 				<i class="fas fa-fw fa-folder"></i>
 				<span>Reply Video Ruang Doa</span></a>
-			</li>
+			</li> -->
 
 			<!-- Divider -->
 			<hr class="sidebar-divider">
@@ -97,7 +151,7 @@
 					</button>
 
 					<ul class="navbar-nav ml-auto">
-						<li class="nav-item dropdown no-arrow mx-1">
+						<!-- <li class="nav-item dropdown no-arrow mx-1">
 							<a class="nav-link dropdown-toggle" href="#" id="title_item" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							</a>
 							<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
@@ -105,7 +159,7 @@
 								</a>								
 								<a class="dropdown-item text-center small text-gray-500" href="#" id="item_none" style="display:none">Tidak ada permintaan</a>
 							</div>
-						</li>
+						</li> -->
 
 						<div class="topbar-divider d-none d-sm-block"></div>
 
@@ -115,11 +169,6 @@
 								<img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60">
 							</a>
 							<div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-								<!-- <a class="dropdown-item" href="#">
-									<i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-									Profile
-								</a>
-								<div class="dropdown-divider"></div> -->
 								<a class="dropdown-item" href="<?=base_url("index.php/logoutadmin");?>">
 									<i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
 									Logout
@@ -155,6 +204,7 @@
 								<div class="btn-group">
 									<select id="fl-kategori" class="custom-select">
 										<option selected value="default">Semua Kategori</option>
+										<option value="0">Tidak Ada Kategori</option>
 									</select>
 								</div>
 							</div>
@@ -237,7 +287,7 @@
 				</div>
 
               	<div class="modal-body">
-					<form onsubmit="insertvideo(event)">
+                    <form id="modal_add">
 						<div class="form-group">
 							<label for="kategori" class="col-form-label"><b>Kategori</b></label>
 							<select class="custom-select" id="kategori" name="kategori" required>
@@ -259,7 +309,7 @@
 
 						<div class="form-group">
 							<label for="video"><b>Upload Video</b></label><br>
-							<input type="file" accept="video/*" id="video" name="video">
+							<input type="file" accept="video/*" id="video" name="video" required>
 						</div>
 
 						<div style="padding-top:10px;padding-bottom:10px;">
@@ -294,7 +344,7 @@
 				</div>
 
               	<div class="modal-body">
-                	<form>
+                    <form id="modal_edit">
 						<div class="form-group">
 							<input type="hidden" class="form-control" id="id-video" value="" readonly>
 						</div>
@@ -310,9 +360,29 @@
 							<input type="text" class="form-control" id="ed-nama-video" required>
 						</div>
 
+						<div class="form-group" id="divupload2">
+							<label for="foto_video" class="col-form-label"><b>Thumbnail Video</b></label><br>
+							<input id="inputFileToLoad1" type="file" accept="image/jpeg,image/png" onchange="encodeImageFileAsURL();" style="padding-top:5px;"/>
+							<div id="imgTest" style="padding-top:15px;"></div>
+							
+						</div>
+						
+						<div class="form-group" id="divimage2">	
+							<label>Thumnbnail</label><br>
+							<button type="button" class="btn btn-secondary" id="hpsimg">Ganti Thumbnail</button>
+						</div>
+
 						<div class="form-group" id="divupload">
 							<label for="ed-upload">Upload Video</label><br>
 							<input type="file" accept="video/*" id="ed-upload" name="ed-upload">
+
+							<div style="padding-top:10px;padding-bottom:10px;">
+								<video width="auto" height="300" id="launch1" style="display:none;"></video>
+							</div>
+							
+							<div class="progress" style="padding-top:5px;">
+								<div class="progress-bar"></div>
+							</div>
 						</div>
 						
 						<div class="form-group" id="divimage">	
@@ -321,15 +391,23 @@
 							<button type="button" class="btn btn-secondary" id="hpsvideo">Ganti Video</button>
 						</div>
 
-					</form>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-dismiss="modal" id="bataldata">Batal</button>
-					<button type="button" class="btn btn-primary" id="updatedata">Update</button>
-				</div>				
+					<!-- <button type="button" class="btn btn-primary" id="updatedata">Update</button> -->
+					<button type="submit" class="btn btn-primary">Tambah</button>
+					
+				</div>		
+				
+					</form>		
             </div>
 		</div>
 	</div> 
+
+	
+    <div id="overlay">
+        <div class="loader"></div>
+    </div>
 
 	
 </body>
@@ -347,11 +425,17 @@
 	var inputkategori = null;
 	var inputstart = null;
 
+	
+	var status = '0';
+	var status_gmbr = '0';
+	var status_gmbr_send = '0';
+	var getthumb = [];
+
 	var d = new Date();
 	var status_thumbnail = '0';
 	var nama_thumbnail = d.getDate().toString() + (d.getMonth()+1).toString() + d.getFullYear().toString() + '_' + d.getHours() + '_';
 
-	console.log(nama_thumbnail);
+	// console.log(nama_thumbnail);
 
 	$.ajax({
         url: "<?php echo base_url() ?>index.php/get_all_kategori",
@@ -360,10 +444,11 @@
         success: function (json) {
           var response = JSON.parse(json);
           response.forEach((data)=>{
-            $('#fl-kategori').append(new Option(data.nama_kategori, data.id_kategori));
-            $('#ed-kategori').append(new Option(data.nama_kategori, data.id_kategori));
-			$('#kategori').append(new Option(data.nama_kategori, data.id_kategori));
-			
+			if(data.id_kategori != 1){
+				$('#fl-kategori').append(new Option(data.nama_kategori, data.id_kategori));
+				$('#ed-kategori').append(new Option(data.nama_kategori, data.id_kategori));
+				$('#kategori').append(new Option(data.nama_kategori, data.id_kategori));
+			}
             
           })
         },
@@ -380,13 +465,35 @@
 		var url = URL.createObjectURL(Element.files[0]); 
 		imgs.style.display = 'block';
 		imgs.src = url; 
-		console.log(Element);
-		console.log(url); 
-		console.log('aaaa ' ,imgs);
-
-		
+		// console.log(Element);
+		// console.log(url); 
+		// console.log('aaaa ' ,imgs);
 
 	}); 
+
+	
+	var Element1 = document.getElementById('ed-upload'); 
+    var imgs1 = document.getElementById('launch1'); 
+	
+    Element1.addEventListener('change', function() { 
+		var url = URL.createObjectURL(Element1.files[0]); 
+		imgs1.style.display = 'block';
+		imgs1.src = url; 
+
+	}); 
+
+	$("#addmodal").on("hidden.bs.modal", function () {
+		
+		$('#addmodal').modal('hide');
+		// alert('hidden');
+	});
+	
+
+	$("#editmodal").on("hidden.bs.modal", function () {
+		
+		$('#editmodal').modal('hide');
+		// alert('hidden');
+	});
 
 	$(document).ready(function () {      
 		dTable = $('#table1').DataTable({
@@ -420,17 +527,16 @@
 		}
 		
 		$.ajax({
-			url: "<?php echo base_url() ?>index.php/get_all_video_limit",
+			url: "<?php echo base_url() ?>index.php/get_all_video",
 			type: 'POST',
-			data: {id:inputid, kategori:inputkategori, start:inputstart},
+			data: {data:inputkategori},
 			success: function (json) {
 				var response = JSON.parse(json);
-				console.log(response);
+				// console.log(response);
 				
 				dTable.clear().draw();
 				if(response.length > 0 ){
 					response.forEach((data)=>{
-						var kategorivideo = data.nama_kategori;
 						var namavideo = data.nama_video;
 						var srcvideo = data.source_video;
 						var srcgambar = data.source_gambar;
@@ -442,17 +548,30 @@
 						var link = "<?php echo base_url() ?>" + "upload/videos/" +srcvideo;
 						var linkimg = "<?php echo base_url() ?>" + "upload/thumbnail/" +srcgambar;
 
-						if(data.id_kategori != null) {
+						if(inputkategori != '0') {
 							dTable.row.add([
-							'<video id="getvideo'+ data.id_video +'" width="400" controls src="'+ link +'" poster="'+ linkimg +'" preload="none"> </video>',
-							namavideo,
-							viewvideo,
-							likevideo,
-							  '<button class="btn btn-outline-info mt-10 mb-10" onclick=tampildata("'+ no +'")><i class="fa fa-edit"></i> Edit</button><br>'
-							+ '<button class="btn btn-outline-success mt-10 mb-10" onclick="komentardata('+ inputdata +')" style="margin-top:10px;"><i class="fa fa-comment"></i> Komentar</button><br>'
-							+ '<button class="btn btn-outline-danger mt-10 mb-10" onclick=hapusdata("'+ no +'") style="margin-top:10px;"><i class="fa fa-trash"></i> Delete</button>'
+								'<video id="getvideo'+ data.id_video +'" width="400" controls src="'+ link +'" poster="'+ linkimg +'" preload="none"> </video>',
+								namavideo,
+								viewvideo,
+								likevideo,
+								'<button class="btn btn-outline-info mt-10 mb-10" onclick=tampildata("'+ no +'")><i class="fa fa-edit"></i> Edit</button><br>'
+								+ '<button class="btn btn-outline-success mt-10 mb-10" onclick="komentardata('+ inputdata +')" style="margin-top:10px;"><i class="fa fa-comment"></i> Komentar</button><br>'
+								+ '<button class="btn btn-outline-danger mt-10 mb-10" onclick=hapusdata("'+ no +'") style="margin-top:10px;"><i class="fa fa-trash"></i> Delete</button>'
 							
 							]).draw(false);
+						} else {
+							if(data.id_kategori == '0'){
+								dTable.row.add([
+									'<video id="getvideo'+ data.id_video +'" width="400" controls src="'+ link +'" poster="'+ linkimg +'" preload="none"> </video>',
+									namavideo,
+									viewvideo,
+									likevideo,
+									'<button class="btn btn-outline-info mt-10 mb-10" onclick=tampildata("'+ no +'")><i class="fa fa-edit"></i> Edit</button><br>'
+									+ '<button class="btn btn-outline-success mt-10 mb-10" onclick="komentardata('+ inputdata +')" style="margin-top:10px;"><i class="fa fa-comment"></i> Komentar</button><br>'
+									+ '<button class="btn btn-outline-danger mt-10 mb-10" onclick=hapusdata("'+ no +'") style="margin-top:10px;"><i class="fa fa-trash"></i> Delete</button>'
+								
+								]).draw(false);
+							}
 						}
 					})				
 				} else{
@@ -523,12 +642,12 @@
 		
     }
 
-
-	function insertvideo(e){
+	$(document).on('submit', '#modal_add', function (event) {
+    	event.preventDefault();   
 		var inputid = "none";
 		var inputktgr = document.getElementById("kategori").value;
 		var inputnama = document.getElementById("namavideo").value;
-		var status = '2';
+		status = '2';
 
 		var myFile = $('#video').prop('files');
 		// console.log('video : ', myFile.length);
@@ -554,9 +673,8 @@
 		var video = document.getElementById('launch');
 		var thecanvas = document.getElementById('thecanvas');
 
-
-		console.log(video);
-		console.log(thecanvas);
+		// console.log(video);
+		// console.log(thecanvas);
 
 		// alert('status vid ' + status_thumbnail);
 		// alert('mul');
@@ -568,7 +686,12 @@
 			draw( video, thecanvas, nama_thumbnail);
 
 		} else {
-			formData.append('src_gambar', nama_thumbnail);
+			// formData.append('src_gambar', nama_thumbnail);
+			// console.log(getthumb);
+			if(getthumb.length != 0){
+				save_image_choose(getthumb[0], getthumb[1], getthumb[2]);
+				formData.append('src_gambar', nama_thumbnail);
+			}
 		}
 
 		
@@ -598,34 +721,11 @@
                 // $('#uploadStatus').html('<img src="loading.gif"/>');
             },
 			success: function (json) {
-				// alert('data ajax');
 				// alert(json);
 				// console.log(json);
-				var temukan = json.indexOf('"') + 1;
-				var namavideo = json.slice(temukan, json.length);
-				var temukan2 = namavideo.indexOf('"');
-				var namavideo2 = namavideo.slice(0, temukan2);
-				// console.log(json);
+				alert('Data Berhasil Diupdate!');
+				window.location = "<?php echo base_url() ?>index.php/dashboardadmin";
 
-				// console.log(namavideo);
-				// console.log(namavideo2);
-
-																								// $.ajax({
-																								// 	url: "https://cmcsurabaya.org/admintesting/api_alkitab/aksi.php?act=tambah_video",
-																								// 	type: 'POST',
-																								// 	data: {id_kategori:inputktgr, video:inputnama, source:namavideo2},
-																								// 	success: function (json) {
-																								// 		// alert(json);                   
-																								// 		// console.log(json);
-																								// 		alert('Data Berhasil Diupdate!');
-																								// 		window.location = "<?php echo base_url() ?>index.php/dashboardadmin";
-
-																								// 	},
-																								// 	error: function () {
-																								// 		console.log("gagal update");
-																								// 		alert('Data gagal diinputkan!');
-																								// 	}
-																								// });
 			},
 			error: function () {
 				$('#uploadStatus').html('<p style="color:#EA4335;">Upload file gagal, silakan coba lagi.</p>');
@@ -634,30 +734,168 @@
 
 		// console.log('nama video , ' + localStorage.getItem("nama"));
 
-		// alert('Data Berhasil Disimpan!');
-		e.preventDefault();
+		// e.preventDefault();
 
-	}
+	});
+
+	$(document).on('submit', '#modal_edit', function (event) {
+    	event.preventDefault(); 
+
+		var inputid = document.getElementById("id-video").value
+		var inputktgr = document.getElementById("ed-kategori").value
+		var inputnama = document.getElementById("ed-nama-video").value
+
+		if(inputktgr == 'default'){
+			alert('Silahkan pilih kategori!');
+			return false;
+		}
+	
+		if(status == "1"){ // ada update video
+			var myFile = $('#ed-upload').prop('files');
+
+			if(myFile.length == 0){
+				alert("Silahkan Pilih File!")
+				return;
+			}
+
+			const fileupload = $('#ed-upload').prop('files')[0];
+			// console.log('FILE UPLOAD : ', fileupload);
+
+			let formData = new FormData();
+			formData.append('fileupload', fileupload);
+			formData.append('nama_file', inputnama);
+			formData.append('kategori_file', inputktgr);
+			formData.append('id_file', inputid);
+			formData.append('status',status);
+			formData.append('status_gmbr',status_gmbr_send);
+			
+			var video = document.getElementById('launch1');
+			var thecanvas = document.getElementById('thecanvas');
+
+			if(status_gmbr_send == '1'){ // ada edit gambar 
+				if(status_thumbnail == '0'){ // gambar dr video
+					nama_thumbnail = nama_thumbnail + inputnama + '.png';
+					formData.append('src_gambar', nama_thumbnail);
+
+					draw( video, thecanvas, nama_thumbnail);
+
+				} else { // gambar dr fitur thumbnail
+				// console.log(getthumb);
+					if(getthumb.length != 0){
+						save_image_choose(getthumb[0], getthumb[1], getthumb[2]);
+						formData.append('src_gambar', nama_thumbnail);
+					}
+				}
+			} else {
+				formData.append('src_gambar', '');
+			}
+
+			// var hsl = insertdata(formData);
+
+			$.ajax({
+				xhr: function() {
+					var xhr = new window.XMLHttpRequest();
+					xhr.upload.addEventListener("progress", function(evt) {
+						if (evt.lengthComputable) {
+							var percentComplete = ((evt.loaded / evt.total) * 100);
+							$(".progress-bar").width(percentComplete + '%');
+							$(".progress-bar").html(percentComplete+'%');
+						}
+					}, false);
+					return xhr;
+				},
+				url: "<?php echo base_url()?>index.php/coba/",
+				type: 'POST',
+				data: formData,
+				cache: false,
+				processData: false,
+				contentType: false,
+				beforeSend: function(){
+					// console.log(formData);
+					$(".progress-bar").width('0%');
+				},
+				success: function (json) {
+					// alert(json);
+					// console.log(json);									
+					alert('Data Berhasil Diupdate!');
+					window.location = "<?php echo base_url() ?>index.php/dashboardadmin";
+
+				},
+				error: function () {
+					console.log("gagal update");
+					alert('Data gagal diinputkan!');
+				}
+			});
+
+		} else {
+			let formData = new FormData();
+			formData.append('nama_file', inputnama);
+			formData.append('kategori_file', inputktgr);
+			formData.append('id_file', inputid);
+			formData.append('status',status);
+			formData.append('status_gmbr',status_gmbr_send);
+			
+			var video = document.getElementById('launch1');
+			var thecanvas = document.getElementById('thecanvas');
+
+			if(status_gmbr_send == '1'){ // ada edit gambar 
+				if(status_thumbnail == '0'){
+					nama_thumbnail = nama_thumbnail + inputnama + '.png';
+					formData.append('src_gambar', nama_thumbnail);
+
+					draw( video, thecanvas, nama_thumbnail);
+
+				} else {
+					// console.log(getthumb);
+					if(getthumb.length != 0){
+						save_image_choose(getthumb[0], getthumb[1], getthumb[2]);
+						formData.append('src_gambar', nama_thumbnail);
+					}
+				}
+			} else {
+				formData.append('src_gambar', '');
+			}
+
+			insertdata(formData);
+			
+			alert('Data Berhasil Diupdate!');
+			window.location = "<?php echo base_url() ?>index.php/dashboardadmin";
+
+		}
 
 
 
-	function draw( video, thecanvas, nama_thumbnail){
-// alert('draw');
+	});
+
+	// $('#hpsvideo').click(function editdata() {
+	// 	document.getElementById("divupload").style.display = "block";
+	// 	document.getElementById("divimage").style.display = "none";
+	// 	status = '1';
+
+	// });
+
+	
+	$('#hpsimg').click(function editdata() {
+		document.getElementById("divupload2").style.display = "block";
+		document.getElementById("divimage2").style.display = "none";
+		status_gmbr = '1';
+
+	});
+
+
+	function draw( video, thecanvas, nama_thumbnail){ // untuk ubah ngambil gambar dr video
+		// alert('draw');
 		var context = thecanvas.getContext('2d');
 
 		context.drawImage( video, 0, 0, video.videoWidth, video.videoHeight);
-// console.log('dith ' + video.videoWidth);
-// console.log('heig ' + video.videoHeight);
-
 		var dataURL = thecanvas.toDataURL();
-
-// alert('jadiii  ' + dataURL);
 		var name = nama_thumbnail;
+		// alert('jadiii  ' + dataURL);
 
 		var temukan = dataURL.indexOf('4') + 2;
 		var inputbase = dataURL.slice(0, temukan);
 
-// console.log(inputbase);
+		// console.log(inputbase);
 
 		$.ajax({
 			url: "<?php echo base_url() ?>index.php/convert_base",
@@ -665,7 +903,7 @@
 			data: {img:dataURL, nama:name, base:inputbase},
 			success: function (json) {
 				// var response = JSON.parse(json);
-				console.log(json);
+				// console.log(json);
 			
 			},
 			error: function (xhr, status, error) {
@@ -676,11 +914,8 @@
 
 	}
 
-
-
-
 	
-	function coba_limit(){
+	function coba_limit(){ //testing
 		inputid = null;
 		inputkategori = null;
 		inputstart = '1';
@@ -691,7 +926,7 @@
 			data: {id:inputid, kategori:inputkategori, start:inputstart},
 			success: function (json) {
 				var response = JSON.parse(json);
-				console.log(response);
+				// console.log(response);
 			
 			},
 			error: function (xhr, status, error) {
@@ -703,27 +938,33 @@
 	}
 
 	// get data one id
-	function tampildata(id) {
-		
+	function tampildata(id) { //detail video		
 		inputid = id;
 		inputkategori = null;
 		inputstart = null;
 
-		console.log(id);
+		// console.log(id);
 		$.ajax({
-			url: "<?php echo base_url()?>index.php/get_all_video_limit",
+			url: "<?php echo base_url()?>index.php/get_video_by_id",
 			type: 'POST',
-			data: {id:inputid, kategori:inputkategori, start:inputstart},
+			data: {id:inputid},
 			success: function (response) {
 				var response = JSON.parse(response);
 				response.forEach((data)=>{
 					var inputidvideo = data.id_video
 					var kategori = data.id_kategori;
 					var namavideo = data.nama_video;
-					var status = '0';
+					status = '0';
+
+					if(kategori == 0){
+						kategori = 'default';
+					}
 
 					document.getElementById("divupload").style.display = "none";
 					document.getElementById("divimage").style.display = "block";
+					
+					document.getElementById("divupload2").style.display = "none";
+					document.getElementById("divimage2").style.display = "block";
 									
 					// var idvideo = "getvideo" + inputidvideo;
 					// var v = document.getElementById(idvideo);
@@ -739,29 +980,9 @@
 					// var img = document.createElement("img");
 					// img.src = canvas.toDataURL();
 					// hasil = canvas.toDataURL('image/png');
+
 					var linked = "<?php echo base_url() ?>" + "upload/thumbnail/" +data.source_gambar;
-
-
 					document.getElementById("edtimg").src = linked;
-
-					// console.log(video);
-					// console.log('imagee ' + img.src);
-
-					// $.ajax({
-					// 	url: "<?php echo base_url() ?>index.php/convert_base",
-					// 	type: 'POST',
-					// 	data: {img: img.src},
-					// 	success: function (json) {
-					// 		// var response = JSON.parse(json);
-					// 		console.log(json);
-						
-					// 	},
-					// 	error: function (xhr, status, error) {
-					// 	alert('Terdapat Kesalahan Pada Server...');
-					// 	$("#submit").prop("disabled", false);
-					// 	}
-					// });
-
 
 					$('#hpsvideo').click(function editdata() {
 						document.getElementById("divupload").style.display = "block";
@@ -773,108 +994,7 @@
 					$('#editmodal').modal();
 					$("#id-video").val(data.id_video);
 					$("#ed-kategori").val(kategori);
-					$('#ed-nama-video').val(namavideo);
-					$('#updatedata').click(function editdata() {
-
-						var inputid = document.getElementById("id-video").value
-						var inputktgr = document.getElementById("ed-kategori").value
-						var inputnama = document.getElementById("ed-nama-video").value
-
-						if(status == "1"){
-							var myFile = $('#ed-upload').prop('files');
-
-							if(myFile.length == 0){
-								alert("Silahkan Pilih File!")
-								return;
-							}
-
-							const fileupload = $('#ed-upload').prop('files')[0];
-							// console.log('FILE UPLOAD : ', fileupload);
-
-							let formData = new FormData();
-							formData.append('fileupload', fileupload);
-							formData.append('nama_file', inputnama);
-							formData.append('kategori_file', inputktgr);
-							formData.append('id_file', inputid);
-							formData.append('status',status);
-							
-							// var hsl = insertdata(formData);
-
-							$.ajax({
-								url: "<?php echo base_url()?>index.php/coba/",
-								type: 'POST',
-								data: formData,
-								cache: false,
-								processData: false,
-								contentType: false,
-								success: function (json) {
-									// alert('Data Berhasil Diupdate!');
-									// alert(json);
-									// console.log(json);
-									var temukan = json.indexOf('"') ;
-									var namavideo = json.slice(1, temukan-1);
-									// console.log(namavideo);
-
-																																						// $.ajax({
-																																						// 	url: "https://cmcsurabaya.org/admintesting/api_alkitab/aksi.php?act=update_video",
-																																						// 	type: 'POST',
-																																						// 	data: {id_video:inputid, id_kategori:inputktgr, video:inputnama, source:namavideo},
-																																						// 	success: function (json) {
-																																						// 		// alert(json);                   
-																																						// 		// console.log(json);
-																																						// 		// console.log('api masuk');
-																																						// 		alert('Data Berhasil Diupdate!');
-																																						// 		window.location = "<?php echo base_url() ?>index.php/dashboardadmin";
-
-																																						// 	},
-																																						// 	error: function () {
-																																						// 		console.log("gagal update");
-																																						// 		alert('Data gagal diinputkan!');
-																																						// 	}
-																																						// });
-
-
-
-								},
-								error: function () {
-									console.log("gagal update");
-									alert('Data gagal diinputkan!');
-								}
-							});
-
-
-							// alert('Data Berhasil Diupdate!');
-
-						} else {
-							let formData = new FormData();
-							formData.append('nama_file', inputnama);
-							formData.append('kategori_file', inputktgr);
-							formData.append('id_file', inputid);
-							formData.append('status',status);
-							
-							insertdata(formData);
-
-																						// $.ajax({
-																						// 	url: "https://cmcsurabaya.org/admintesting/api_alkitab/aksi.php?act=update_video_1",
-																						// 	type: 'POST',
-																						// 	data: {id_video:inputid, id_kategori:inputktgr, video:inputnama},
-																						// 	success: function (json) {
-																						// 		// alert(json);                   
-																						// 		// console.log(json);
-																						// 		// console.log('api masuk');
-																						// 		alert('Data Berhasil Diupdate!');
-																						// 		window.location = "<?php echo base_url() ?>index.php/dashboardadmin";
-
-																						// 	},
-																						// 	error: function () {
-																						// 		console.log("gagal update");
-																						// 		alert('Data gagal diinputkan!');
-																						// 	}
-																						// });
-							// alert('Data Berhasil Diupdate!');
-						}
-						
-					});					
+					$('#ed-nama-video').val(namavideo);				
 				})                
 			},
 			error: function () {
@@ -883,10 +1003,8 @@
 		});          
     }
 
-
-	function komentardata(id, nama){
-		
-		// alert(id + ", " + nama + ";");
+	// simpan id utk lihat komentar
+	function komentardata(id, nama){		
 		localStorage.setItem("name_video", nama);
 
 		$.ajax({
@@ -899,14 +1017,9 @@
 				
 			},
 			error: function () {
-				console.log("gagal menghapus");
-				alert('Data gagal Dihapus!');
-
-
+				console.log("error");
 			}
 		});
-
-
 	}
 
 
@@ -918,119 +1031,156 @@
 				url: "<?php echo base_url() ?>index.php/delete_video",
 				type: 'POST',
 				data: {id: id},
+                beforeSend: function(){
+                    $("#submit").prop("disabled", true);
+                    // $(".progress-bar").width('0%');
+                    document.getElementById("overlay").style.display = "block";
+                },
 				success: function (response) {
-					alert('Data Berhasil Dihapus!');
-					window.location = "<?php echo base_url() ?>index.php/dashboardadmin";
+					document.getElementById("overlay").style.display = "none";
+					
+					$.ajax({
+						url: "https://adminfirmanhidup.cmcsurabaya.org/api_alkitab/aksi.php?act=delete_all_in_video",
+						type: 'POST',
+						data: {id: id},
+						success: function (response) {
+							alert('Data Berhasil Dihapus!');
+							window.location = "<?php echo base_url() ?>index.php/dashboardadmin";
+						},
+						error: function () {
+							console.log("gagal menghapus");
+							alert('Data gagal Dihapus!');
+
+						}
+					});	
+
 				},
 				error: function () {
-					console.log("gagal menghapus");
-					alert('Data gagal Dihapus!');
-
+					// console.log("gagal menghapus");
+					// alert('Data gagal Dihapus!');
 				}
-			});			
-			
+			});	
 		}
     }
 
+
+	// cek jml permintaan doa baru
 	function cek_mail(){
-		var start = 0;
-		var email = '';
+	// 	var start = 0;
+	// 	var email = '';
 
-		$.ajax({
-			url: "https://cmcsurabaya.org/admintesting/api_alkitab/aksi.php?act=get_all_video_doa_admin",
-			type: 'POST',
-			data: {start:start, email:email},
-			success: function (json) {
-				var response = JSON.parse(json);
-				// console.log(response);
-				var jml = 0;
-				response.forEach((data)=>{
-					var status = data.status_reply;
+	// 	$.ajax({
+	// 		url: "https://adminfirmanhidup.cmcsurabaya.org/api_alkitab/aksi.php?act=get_all_video_doa_admin",
+	// 		type: 'POST',
+	// 		data: {start:start, email:email},
+	// 		success: function (json) {
+	// 			var response = JSON.parse(json);
+	// 			var jml = 0;
+	// 			// console.log(response);
 
-					if(status == '0'){
-						jml = jml + 1;
-					}							
-				})
+	// 			response.forEach((data)=>{
+	// 				var status = data.status_reply;
 
-				if(jml != 0){
-					document.getElementById("item_notif").innerHTML = '<i class="fas fa-file mr-2"></i> '+ jml +' Permintaan Doa Baru';
-					document.getElementById("title_item").innerHTML = '<i class="fas fa-bell fa-fw"></i><span class="badge badge-danger badge-counter">'+ jml +'</span>';
-					document.getElementById("item_notif").style.display = "block"; 
-				} else {
-					document.getElementById("item_none").style.display = "block"; 				
-					document.getElementById("title_item").innerHTML = '<i class="fas fa-bell fa-fw"></i><span class="badge badge-danger badge-counter"></span>';
-				}
+	// 				if(status == '0'){
+	// 					jml = jml + 1;
+	// 				}							
+	// 			})
 
+	// 			if(jml != 0){
+	// 				document.getElementById("item_notif").innerHTML = '<i class="fas fa-file mr-2"></i> '+ jml +' Permintaan Doa Baru';
+	// 				document.getElementById("title_item").innerHTML = '<i class="fas fa-bell fa-fw"></i><span class="badge badge-danger badge-counter">'+ jml +'</span>';
+	// 				document.getElementById("item_notif").style.display = "block"; 
+	// 			} else {
+	// 				document.getElementById("item_none").style.display = "block"; 				
+	// 				document.getElementById("title_item").innerHTML = '<i class="fas fa-bell fa-fw"></i><span class="badge badge-danger badge-counter"></span>';
+	// 			}
 				
-			},
-			error: function (xhr, status, error) {
-			alert('Terdapat Kesalahan Pada Server...');
-			$("#submit").prop("disabled", false);
-			}
-		});
-
+	// 		},
+	// 		error: function (xhr, status, error) {
+	// 			alert('Terdapat Kesalahan Pada Server...');
+	// 		}
+	// 	});
 	}
 
 
+	//untuk encode file foto input
 	function encodeImageFileAsURL() {
 
 		status_thumbnail = '1';
 
-		var filesSelected = document.getElementById("inputFileToLoad").files;
+		if(status_gmbr == '1'){
+			var filesSelected = document.getElementById("inputFileToLoad1").files;
+
+		} else {
+			var filesSelected = document.getElementById("inputFileToLoad").files;
+		}
+
+		status_gmbr_send = '1';
+
 		if (filesSelected.length > 0) {
 			var fileToLoad = filesSelected[0];
-
 			var fileReader = new FileReader();
-			console.log(fileToLoad.name);
-
 			nama_thumbnail = nama_thumbnail + fileToLoad.name;
-
+			// console.log(fileToLoad.name);
 
 			fileReader.onload = function(fileLoadedEvent) {
 				var srcData = fileLoadedEvent.target.result; // <--- data: base64
 				var newImage = document.createElement('img');
 				newImage.src = srcData;
 				newImage.width = '500';
-
 				
 				document.getElementById("imgTest").innerHTML = newImage.outerHTML;
 
-				alert("Converted Base64 version is " + document.getElementById("imgTest").innerHTML);
+				// alert("Converted Base64 version is " + document.getElementById("imgTest").innerHTML);
 				// console.log("Converted Base64 version is " + document.getElementById("imgTest").innerHTML);
-
-// console.log('--------');
-// console.log(newImage.outerHTML);
-
 				
 				var temukan = newImage.outerHTML.indexOf('4') + 2;
 				var inputbase = newImage.outerHTML.slice(10, temukan);
-
-
-// console.log('--------');
-// console.log(inputbase);
-
 				var name = nama_thumbnail;
 
-				$.ajax({
-					url: "<?php echo base_url() ?>index.php/convert_base",
-					type: 'POST',
-					data: {img: srcData, nama:name, base:inputbase},
-					success: function (json) {
-						// var response = JSON.parse(json);
-						console.log(json);
-					
-					},
-					error: function (xhr, status, error) {
-					alert('Terdapat Kesalahan Pada Server...');
-					$("#submit").prop("disabled", false);
-					}
-				});
+								
+				getthumb[0] = srcData;
+				getthumb[1] = name;
+				getthumb[2] = inputbase;
 
+				// console.log(getthumb);
+				// alert('k ' + getthumb);
+
+				//harus dipindah ajaxnya
+				// $.ajax({
+				// 	url: "<?php echo base_url() ?>index.php/convert_base",
+				// 	type: 'POST',
+				// 	data: {img: srcData, nama:name, base:inputbase},
+				// 	success: function (json) {
+				// 		// var response = JSON.parse(json);
+				// 		// console.log(json);
+					
+				// 	},
+				// 	error: function (xhr, status, error) {
+				// 		alert('Terdapat Kesalahan Pada Server...');
+				// 	}
+				// });
 			}
 			fileReader.readAsDataURL(fileToLoad);
 		}
 	}
 
+
+	function save_image_choose(a,b,c){
+		$.ajax({
+			url: "<?php echo base_url() ?>index.php/convert_base",
+			type: 'POST',
+			data: {img: a, nama:b, base:c},
+			success: function (json) {
+				// var response = JSON.parse(json);
+				// console.log(json);
+			
+			},
+			error: function (xhr, status, error) {
+				alert('Terdapat Kesalahan Pada Server...');
+			}
+		});
+	}
 
 </script>
 

@@ -10,6 +10,8 @@
 	<meta name="author" content="">
 
 	<title>App Alkitab</title>
+	
+	<link href="<?=base_url("dist/img/logo.png");?>" rel="icon">
 
 	<!-- Custom fonts for this template -->
 	<link href="<?=base_url("dist/vendor/fontawesome-free/css/all.min.css");?>" rel="stylesheet" type="text/css">
@@ -33,7 +35,6 @@
 		<!-- Sidebar -->
 		<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-			<!-- Sidebar - Brand -->
 			<a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
 				<div class="sidebar-brand-icon bg-white">
 					<img src="<?php echo base_url() ?>dist/img/logo.png" width="55px;" height="48px;"> 
@@ -41,31 +42,29 @@
 				<div class="sidebar-brand-text mx-3">App Alkitab</div>
 			</a>
 
-			<!-- Divider -->
 			<hr class="sidebar-divider my-0">
-
-			<!-- Nav Item - Dashboard -->
 			<li class="nav-item active">
-				<a class="nav-link" href="#">
+				<a class="nav-link" href="<?=base_url("index.php/dashboardadmin");?>">
 				<i class="fas fa-fw fa-tachometer-alt"></i>
 				<span>Manajemen Video</span></a>
 			</li>
 
-			<!-- Divider -->
-			<hr class="sidebar-divider">
-
-
-			<!-- Nav Item - Tables -->
+			<!-- <hr class="sidebar-divider">
 			<li class="nav-item">
+				<a class="nav-link" href="<?=base_url("index.php/replyvideodetail");?>">
+				<i class="fas fa-fw fa-folder"></i>
+				<span>Reply Video Ruang Doa</span></a>
+			</li> -->
+
+			<!-- <hr class="sidebar-divider"> -->
+			<!-- <li class="nav-item">
 				<a class="nav-link" href="<?=base_url("index.php/logoutadmin");?>">
 				<i class="fas fa-fw fa-table"></i>
 				<span>Sign Out</span></a>
-			</li>
+			</li> -->
 
-			<!-- Divider -->
+
 			<hr class="sidebar-divider d-none d-md-block">
-
-			<!-- Sidebar Toggler (Sidebar) -->
 			<div class="text-center d-none d-md-inline">
 				<button class="rounded-circle border-0" id="sidebarToggle"></button>
 			</div>
@@ -78,6 +77,44 @@
 
 			<!-- Main Content -->
 			<div id="content">
+
+				<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+					<button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+						<i class="fa fa-bars"></i>
+					</button>
+
+					<ul class="navbar-nav ml-auto">
+						<!-- <li class="nav-item dropdown no-arrow mx-1">
+							<a class="nav-link dropdown-toggle" href="#" id="title_item" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							</a>
+							<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
+								<a class="dropdown-header" href="<?=base_url("index.php/replyvideodetail");?>" id="item_notif" style="display:none">									
+								</a>								
+								<a class="dropdown-item text-center small text-gray-500" href="#" id="item_none" style="display:none">Tidak ada permintaan</a>
+							</div>
+						</li> -->
+
+						<div class="topbar-divider d-none d-sm-block"></div>
+
+						<li class="nav-item dropdown no-arrow">
+							<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								<span class="mr-2 d-none d-lg-inline text-gray-600 small">Admin</span>
+								<img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60">
+							</a>
+							<div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+								<!-- <a class="dropdown-item" href="#">
+									<i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+									Profile
+								</a>
+								<div class="dropdown-divider"></div> -->
+								<a class="dropdown-item" href="<?=base_url("index.php/logoutadmin");?>">
+									<i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+									Logout
+								</a>
+							</div>
+						</li>
+					</ul>
+				</nav>
 
 				<!-- Begin Page Content -->
 				<div class="container-fluid">
@@ -202,6 +239,7 @@
 	});
 
     var id_video = '';
+	var jml_comment = 0;
 	var title = localStorage.getItem("name_video");
 
 	$(document).ready(function () {      
@@ -209,6 +247,8 @@
 			responsive: true,
             "ordering": false
 		});	
+
+		// cek_mail();
 
 		document.getElementById("judul").innerHTML = '<h3 class="m-0 font-weight-bold text-primary">Komentar Video ' + title +'</h3>';
 		
@@ -239,17 +279,17 @@
 
 
 	function get_data(id){
-		console.log('id ' + id)
+		// console.log('id ' + id)
 		
 		var dataString="id=" + id;
 
 		$.ajax({
-			url: "https://cmcsurabaya.org/admintesting/api_alkitab/aksi.php?act=get_all_comment_test",
+			url: "https://adminfirmanhidup.cmcsurabaya.org/api_alkitab/aksi.php?act=get_all_comment_test",
 			type: 'POST',
 			data: dataString,
 			success: function (json) {
 				var response = JSON.parse(json);
-				console.log(response);
+				// console.log(response);
 
 				if(response == null){
 					$(".dataTables_empty").text("Tidak ada data Komentar pada Video ini");
@@ -261,6 +301,8 @@
 							var komentar = data.komentar;
 							var nama = data.email;
 							no = data.id_comment;   
+
+							jml_comment = jml_comment + 1;
 
 							dTable.row.add([
 								nama,
@@ -287,15 +329,32 @@
    
     function hapusdata(id) {
 		var tanya = confirm("hapus?");
+		var jml_data = jml_comment - 1;
 
 		if(tanya){
 			$.ajax({
-				url: "https://cmcsurabaya.org/admintesting/api_alkitab/aksi.php?act=delete_komentar",
+				url: "<?php echo base_url() ?>index.php/update_jml_comment",
 				type: 'POST',
-				data: {id: id},
+				data:{ jml:jml_data, id:id_video},
 				success: function (response) {
-					alert('Komentar Berhasil Dihapus!');
-					window.location = "<?php echo base_url() ?>index.php/komentarvideo";
+					// console.log(response);
+
+					$.ajax({
+						url: "https://adminfirmanhidup.cmcsurabaya.org/api_alkitab/aksi.php?act=delete_komentar",
+						type: 'POST',
+						data: {id: id},
+						success: function (response) {
+							alert('Komentar Berhasil Dihapus!');
+							window.location = "<?php echo base_url() ?>index.php/komentarvideo";
+						},
+						error: function () {
+							console.log("gagal menghapus");
+							alert('Data gagal Dihapus!');
+
+
+						}
+					});
+
 				},
 				error: function () {
 					console.log("gagal menghapus");
@@ -305,23 +364,48 @@
 				}
 			});
 
-			// $.ajax({
-			// 	url: "https://cmcsurabaya.org/admintesting/api_alkitab/aksi.php?act=delete_kategori",
-			// 	type: 'POST',
-			// 	data: {id: id},
-			// 	success: function (response) {
-			// 		// alert('Data api Dihapus!');
-			// 		window.location = "<?php echo base_url() ?>index.php/kategoriadmin";
-			// 	},
-			// 	error: function () {
-			// 		console.log("gagal menghapus");
-			// 		alert('Data gagal Dihapus!');
-
-
-			// 	}
-			// });
+		
 		}
     }
+
+	function cek_mail(){
+		var start = 0;
+		var email = '';
+
+		$.ajax({
+			url: "https://adminfirmanhidup.cmcsurabaya.org/api_alkitab/aksi.php?act=get_all_video_doa_admin",
+			type: 'POST',
+			data: {start:start, email:email},
+			success: function (json) {
+				var response = JSON.parse(json);
+				// console.log(response);
+				var jml = 0;
+				response.forEach((data)=>{
+					var status = data.status_reply;
+
+					if(status == '0'){
+						jml = jml + 1;
+					}							
+				})
+
+				if(jml != 0){
+					document.getElementById("item_notif").innerHTML = '<i class="fas fa-file mr-2"></i> '+ jml +' Permintaan Doa Baru';
+					document.getElementById("title_item").innerHTML = '<i class="fas fa-bell fa-fw"></i><span class="badge badge-danger badge-counter">'+ jml +'</span>';
+					document.getElementById("item_notif").style.display = "block"; 
+				} else {
+					document.getElementById("item_none").style.display = "block"; 				
+					document.getElementById("title_item").innerHTML = '<i class="fas fa-bell fa-fw"></i><span class="badge badge-danger badge-counter"></span>';
+				}
+
+				
+			},
+			error: function (xhr, status, error) {
+			alert('Terdapat Kesalahan Pada Server...');
+			$("#submit").prop("disabled", false);
+			}
+		});
+
+	}
     
         
 	
