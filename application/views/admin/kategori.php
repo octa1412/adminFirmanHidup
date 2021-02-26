@@ -313,7 +313,7 @@
 						</div>     
 						<div class="form-group" id="divimage_1" style="display:block">
 							<label> Foto Kategori </label><br>
-							<img id="tampilan_foto_1" src="" onerror="this.src='<?php echo base_url() ?>upload/image_not_found.jpg';" width="auto" height="200"><br><br>
+							<img id="tampilan_foto_1" src="" onerror="this.src='<?php echo base_url() ?>upload/image_not_found.jpg';" width="300" height="auto"><br><br>
 							<button type="button" class="btn btn-outline-info"><a href="#" id="download_file_1" download>Download File</a></button>
 							<button type="button" class="btn btn-outline-secondary" id="hpsdokumen1">Ganti File</button>
 						</div>
@@ -556,7 +556,7 @@
 						status_allow = status_allow + '1';						
 						var srcData = fileLoadedEvent.target.result; // <--- data: base64
 						var newImage = document.createElement('img');
-						newImage.src = srcData;
+						newImage.src = srcData; 
 						newImage.width = '200';
 						// console.log(newImage.outerHTML);
 						
@@ -620,14 +620,14 @@
 							status_allow = status_allow + '1';
 							$('#preview_gambar') 
 							.attr('src', e.target.result)
-							.width(150); 
+							.width(300); 
 							
 						} else {
 							alert('Size lebih dari 512x512!');			
 							input.value = '';
 							$('#preview_gambar') 
 							.attr('src', '')
-							.width(150); 
+							.width(300); 
 							return false;
 						}
 					}

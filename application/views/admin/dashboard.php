@@ -279,7 +279,7 @@
 							<label for="foto_video" class="col-form-label"><b>Thumbnail Video</b></label><br>
 							<span>*Foto Video akan diambil secara acak dari video jika poin ini tidak diisi</span><br>
 							<input id="inputFileToLoad" type="file" accept="image/jpeg,image/png" onchange="encodeImageFileAsURL();" style="padding-top:5px;"/>
-							<div id="imgTest" style="padding-top:15px;"></div>
+							<div id="imgTest" style="padding-top:15px;width: 100%; max-width: 100%;"></div>
 						</div>
 
 						<div class="form-group">
@@ -288,7 +288,7 @@
 						</div>
 
 						<div style="padding-top:10px;padding-bottom:10px;">
-							<video width="auto" height="400" id="launch" style="display:none;"></video>
+							<video style="width: 100%; max-width: 100%;" id="launch" style="display:none;"></video>
 							<!-- <img src="<?php echo base_url() ?>dist/img/defaults.jpg" width="auto;" height="100px;">  -->
 						</div>
 
@@ -338,7 +338,7 @@
 						<div class="form-group" id="divupload2">
 							<label for="foto_video" class="col-form-label"><b>Thumbnail Video</b></label><br>
 							<input id="inputFileToLoad1" type="file" accept="image/jpeg,image/png" onchange="encodeImageFileAsURL();" style="padding-top:5px;"/>
-							<div id="imgTest" style="padding-top:15px;"></div>
+							<div id="imgTest" style="padding-top:15px;width: 100%; max-width: 100%;"></div>
 							
 						</div>
 						
@@ -352,7 +352,7 @@
 							<input type="file" accept="video/*" id="ed-upload" name="ed-upload">
 
 							<div style="padding-top:10px;padding-bottom:10px;">
-								<video width="auto" height="300" id="launch1" style="display:none;"></video>
+								<video style="width: 100%; max-width: 100%;" id="launch1" style="display:none;"></video>
 							</div>
 							
 							<div class="progress" style="padding-top:5px;">
@@ -362,7 +362,7 @@
 						
 						<div class="form-group" id="divimage">	
 							<label>Video</label><br>
-							<img src="" id="edtimg" width="400px;" height="auto;"> <br><br>
+							<img src="" id="edtimg" style="width: 100%; max-width: 100%;"> <br><br>
 							<button type="button" class="btn btn-secondary" id="hpsvideo">Ganti Video</button>
 						</div>
 
@@ -1136,7 +1136,7 @@
 				var srcData = fileLoadedEvent.target.result; // <--- data: base64
 				var newImage = document.createElement('img');
 				newImage.src = srcData;
-				newImage.width = '500';
+				newImage.width = '300';
 				
 				document.getElementById("imgTest").innerHTML = newImage.outerHTML;
 

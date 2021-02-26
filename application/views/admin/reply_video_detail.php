@@ -219,10 +219,10 @@
 						<div class="form-group">
 							<label for="dokumen_reply">Upload Video</label><br>
 							<input type="file" accept="video/*" id="dokumen_reply" name="dokumen_reply">
-						</div>
+						</div> 
 
 						<div>
-							<video width="100%" height="300px" id="launch"></video>
+							<video style="width: 100%; max-width: 100%;" id="launch"></video>
 							<!-- <img src="<?php echo base_url() ?>dist/img/defaults.jpg" width="auto;" height="100px;">  -->
 						</div>
 
@@ -264,7 +264,7 @@
 
 						<div class="form-group">
 							<label for="ed-upload">Video Terikirim</label><br>
-							<video id="videoreply" width="100%" height="300px" controls src="#"></video>
+							<video id="videoreply" style="width: 100%; max-width: 100%;" controls src="#"></video>
 						</div>
 											
 				</div>
