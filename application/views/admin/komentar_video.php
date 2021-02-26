@@ -24,6 +24,9 @@
 	<link href="<?=base_url("dist/vendor/datatables/dataTables.bootstrap4.min.css");?>" rel="stylesheet">
 
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.7/css/responsive.dataTables.min.css">
+
 
 </head>
 
@@ -49,12 +52,12 @@
 				<span>Manajemen Video</span></a>
 			</li>
 
-			<!-- <hr class="sidebar-divider">
+			<hr class="sidebar-divider">
 			<li class="nav-item">
 				<a class="nav-link" href="<?=base_url("index.php/replyvideodetail");?>">
 				<i class="fas fa-fw fa-folder"></i>
 				<span>Reply Video Ruang Doa</span></a>
-			</li> -->
+			</li>
 
 			<!-- <hr class="sidebar-divider"> -->
 			<!-- <li class="nav-item">
@@ -196,6 +199,11 @@
 	<script src="<?=base_url("dist/js/demo/datatables-demo.js");?>"></script>
 
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.7/js/dataTables.responsive.min.js"></script>
+
+	<script>var $j = jQuery.noConflict(true);</script>
 
 	<!-- modal edit -->
 	<div class="modal fade" id="editmodal" tabindex="-1" role="dialog" aria-labelledby="editTitle" aria-hidden="true">
@@ -243,8 +251,8 @@
 	var title = localStorage.getItem("name_video");
 
 	$(document).ready(function () {      
-		dTable = $('#table1').DataTable({
-			responsive: true,
+		dTable = $j('#table1').DataTable({
+			"responsive": true,
             "ordering": false
 		});	
 

@@ -25,6 +25,9 @@
 	<link href="<?=base_url("dist/vendor/datatables/dataTables.bootstrap4.min.css");?>" rel="stylesheet">
 
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.7/css/responsive.dataTables.min.css">
+
 
 </head>
 
@@ -98,7 +101,7 @@
 					</button>
 
 					<ul class="navbar-nav ml-auto">
-						<li class="nav-item dropdown no-arrow mx-1">
+						<!-- <li class="nav-item dropdown no-arrow mx-1">
 							<a class="nav-link dropdown-toggle" href="#" id="title_item" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							</a>
 							<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
@@ -106,7 +109,7 @@
 								</a>								
 								<a class="dropdown-item text-center small text-gray-500" href="#" id="item_none" style="display:none">Tidak ada permintaan</a>
 							</div>
-						</li>
+						</li> -->
 
 						<div class="topbar-divider d-none d-sm-block"></div>
 
@@ -141,6 +144,7 @@
 					<div class="card shadow mb-4">
 						<div class="card-header py-3">
 							<h3 class="m-0 font-weight-bold text-primary">Reply Video Ruang Doa</h3>
+							<!-- <button onclick="test_email('octa.riadi1412@gmail.com')">test email</button> -->
 						</div>
 
 						<div class="card-body">
@@ -188,25 +192,7 @@
 		<i class="fas fa-angle-up"></i>
 	</a>
 
-		
-	<!-- Bootstrap core JavaScript-->
-	<script src="<?=base_url("dist/vendor/jquery/jquery.min.js");?>"></script>
-	<script src="<?=base_url("dist/vendor/bootstrap/js/bootstrap.bundle.min.js");?>"></script>
 
-	<!-- Core plugin JavaScript-->
-	<script src="<?=base_url("dist/vendor/jquery-easing/jquery.easing.min.js");?>"></script>
-
-	<!-- Custom scripts for all pages-->
-	<script src="<?=base_url("dist/js/sb-admin-2.min.js");?>"></script>
-
-	<!-- Page level plugins -->
-	<script src="<?=base_url("dist/vendor/datatables/jquery.dataTables.min.js");?>"></script>
-	<script src="<?=base_url("dist/vendor/datatables/dataTables.bootstrap4.min.js");?>"></script>
-
-	<!-- Page level custom scripts -->
-	<script src="<?=base_url("dist/js/demo/datatables-demo.js");?>"></script>
-
-	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
 
 	<!-- modal reply -->
 	<div class="modal fade" id="replymodal" tabindex="-1" role="dialog" aria-labelledby="editTitle" aria-hidden="true">
@@ -290,6 +276,32 @@
 		</div>
 	</div> 
 
+		
+	<!-- Bootstrap core JavaScript-->
+	<script src="<?=base_url("dist/vendor/jquery/jquery.min.js");?>"></script>
+	<script src="<?=base_url("dist/vendor/bootstrap/js/bootstrap.bundle.min.js");?>"></script>
+
+	<!-- Core plugin JavaScript-->
+	<script src="<?=base_url("dist/vendor/jquery-easing/jquery.easing.min.js");?>"></script>
+
+	<!-- Custom scripts for all pages-->
+	<script src="<?=base_url("dist/js/sb-admin-2.min.js");?>"></script>
+
+	<!-- Page level plugins -->
+	<script src="<?=base_url("dist/vendor/datatables/jquery.dataTables.min.js");?>"></script>
+	<script src="<?=base_url("dist/vendor/datatables/dataTables.bootstrap4.min.js");?>"></script>
+
+	<!-- Page level custom scripts -->
+	<script src="<?=base_url("dist/js/demo/datatables-demo.js");?>"></script>
+
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.7/js/dataTables.responsive.min.js"></script>
+
+	<script>var $j = jQuery.noConflict(true);</script>
+	
+
 </body>
 
 <?php $this->load->view("function_cookie");?>
@@ -302,11 +314,18 @@
 
 	var email = '';
 	var start = 0;
+	var data_email = [];
 
 	$(document).ready(function () {      
-		dTable = $('#table1').DataTable({
-			responsive: true,
-            "ordering": false
+		dTable = $j('#table1').DataTable({
+			'responsive': true,
+            "ordering": false,
+			"columns": [
+				{ "width": "40%", responsivePriority: 3, targets: -1 },
+				{ "width": "20%", responsivePriority: 1 },
+				{ "width": "20%", responsivePriority: 2 },
+				{ "width": "20%" },
+			]
 		});
 
 		$(".dataTables_empty").text("Loading...");
@@ -320,48 +339,55 @@
 				var response = JSON.parse(json);
 				var jml = 0;
 				// console.log(response);
-				response.forEach((data)=>{
 
-					var namauser = data.email;
-					var status = data.status_reply;
-					var srcvideo = data.video;
-					no = data.id_ruang_doa;   
+				if(response != null){
+					response.forEach((data)=>{
 
-					if(status == '0'){
-						jml = jml + 1;
-					}	
+						var namauser = data.email;
+						var status = data.status_reply;
+						var srcvideo = data.video;
+						no = data.id_ruang_doa;   
 
-					var link = "<?php echo base_url() ?>" + "upload/ruang_doa/" +srcvideo;
-					
-					if(status == '0'){
-						dTable.row.add([
-						'<video id="getvideo'+ no +'" height="300" width="auto" controls src="'+ link +'"> </video>',
-						namauser,
-						'<p style="color:orange;"><i class="fa fa-clock"></i>&nbsp;Belum dibalas</p>',
-						'<button class="btn btn-outline-success mt-10 mb-10" onclick=tampildata("'+ no +'")>Reply</button><br>'
-						+ '<button class="btn btn-outline-danger mt-10 mb-10" onclick=hapusdata("'+ no +'") style="margin-top:10px;">Delete</button>'
-						]).draw(false);
+						if(status == '0'){
+							jml = jml + 1;
+						}	
 
-					} else {
-						dTable.row.add([
-						'<video id="getvideo'+ no +'" height="300" width="auto" controls src="'+ link +'"> </video>',
-						namauser,
-						'<p style="color:green;"><i class="fa fa-check-circle"></i>&nbsp;Sudah dibalas</p>',
-						'<button class="btn btn-outline-info mt-10 mb-10" onclick=detaildata("'+ no +'")>Detail</button><br>'
-						+ '<button class="btn btn-outline-danger mt-10 mb-10" onclick=hapusdata("'+ no +'") style="margin-top:10px;">Delete</button>'
-						]).draw(false);
-					}
-					
-				})
+						var link = "<?php echo base_url() ?>" + "upload/ruang_doa/" +srcvideo;
+						
+						if(status == '0'){
+							data_email.push({id:no, email:namauser});
+							
+							dTable.row.add([
+							'<video id="getvideo'+ no +'" style="width: 100%; max-width: 100%;" controls src="'+ link +'"> </video>',
+							namauser,
+							'<p style="color:orange;"><i class="fa fa-clock"></i>&nbsp;Belum dibalas</p>',
+							'<button class="btn btn-outline-success mt-10 mb-10" onclick=tampildata("'+ no +'")><i class="fa fa-edit"></i> Reply</button><br>'
+							+ '<button class="btn btn-outline-danger mt-10 mb-10" onclick=hapusdata("'+ no +'") style="margin-top:10px;"><i class="fa fa-trash"></i> Delete</button>'
+							]).draw(false);
 
-				if(jml != 0){
-					document.getElementById("item_notif").innerHTML = '<i class="fas fa-file mr-2"></i> '+ jml +' Permintaan Doa Baru';
-					document.getElementById("title_item").innerHTML = '<i class="fas fa-bell fa-fw"></i><span class="badge badge-danger badge-counter">'+ jml +'</span>';
-					document.getElementById("item_notif").style.display = "block"; 
+						} else {
+							dTable.row.add([
+							'<video id="getvideo'+ no +'" style="width: 100%; max-width: 100%;" controls src="'+ link +'"> </video>',
+							namauser,
+							'<p style="color:green;"><i class="fa fa-check-circle"></i>&nbsp;Sudah dibalas</p>',
+							'<button class="btn btn-outline-info mt-10 mb-10" onclick=detaildata("'+ no +'")><i class="fa fa-tasks"></i> Detail</button><br>'
+							+ '<button class="btn btn-outline-danger mt-10 mb-10" onclick=hapusdata("'+ no +'") style="margin-top:10px;"><i class="fa fa-trash"></i> Delete</button>'
+							]).draw(false);
+						}
+						
+					})
 				} else {
-					document.getElementById("item_none").style.display = "block"; 
-					document.getElementById("title_item").innerHTML = '<i class="fas fa-bell fa-fw"></i><span class="badge badge-danger badge-counter"></span>';
+					$(".dataTables_empty").text("Tidak ada data yang ditampilkan.");
 				}
+
+				// if(jml != 0){
+				// 	document.getElementById("item_notif").innerHTML = '<i class="fas fa-file mr-2"></i> '+ jml +' Permintaan Doa Baru';
+				// 	document.getElementById("title_item").innerHTML = '<i class="fas fa-bell fa-fw"></i><span class="badge badge-danger badge-counter">'+ jml +'</span>';
+				// 	document.getElementById("item_notif").style.display = "block"; 
+				// } else {
+				// 	document.getElementById("item_none").style.display = "block"; 
+				// 	document.getElementById("title_item").innerHTML = '<i class="fas fa-bell fa-fw"></i><span class="badge badge-danger badge-counter"></span>';
+				// }
 
 
 			},
@@ -424,6 +450,7 @@
 		var inputid = document.getElementById("id_video_reply").value;
 		var file_1 = $('#dokumen_reply').prop('files');
 		var status = '1';
+		var email_reply = '';
 
 		if(file_1.length == 0){
 			alert("Silahkan Pilih File!")
@@ -435,6 +462,14 @@
 		let formData = new FormData();
 		formData.append('id', inputid);
 		formData.append('file_1', fileupload_1);
+
+		for(var i=0; i<data_email.length; i++){
+			if(data_email[i].id == inputid){
+				email_reply = data_email[i].email;
+			}
+		}
+
+		// console.log(email_reply);
 			
 		$.ajax({
 			url: "https://adminfirmanhidup.cmcsurabaya.org/api_alkitab/aksi.php?act=update_status_reply",
@@ -442,6 +477,7 @@
 			data: {id:inputid, status:status},
 			success: function (response) {
 				// alert('Data Berhasil Dihapus!');
+				email_send(email_reply);
 
 				$.ajax({
 					xhr: function() {
@@ -559,6 +595,27 @@
 		// 	$("#submit").prop("disabled", false);
 		// 	}
 		// });
+
+	}
+
+	function email_send(email){
+
+		$.ajax({
+			url: "<?php echo base_url() ?>index.php/test_email",
+			type: 'POST',
+			data: {email:email},
+			success: function (response) {
+				// alert(response);
+				// console.log(response);
+
+			},
+			error: function () {
+				// console.log("gagal terkirim");
+				// alert('Data gagal terkirim!');
+
+
+			}
+		});
 
 	}
 

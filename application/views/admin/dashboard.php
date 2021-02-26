@@ -25,6 +25,8 @@
 	<link href="<?=base_url("dist/vendor/datatables/dataTables.bootstrap4.min.css");?>" rel="stylesheet">
 
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.7/css/responsive.dataTables.min.css">
 
 	<style>
 		#overlay {
@@ -96,33 +98,23 @@
 				<div class="sidebar-brand-text mx-3">App Alkitab</div>
 			</a>
 
-			<!-- Divider -->
 			<hr class="sidebar-divider my-0">
-
-			<!-- Nav Item - Dashboard -->
 			<li class="nav-item active">
 				<a class="nav-link" href="<?=base_url("index.php/dashboardadmin");?>">
 				<i class="fas fa-fw fa-tachometer-alt"></i>
 				<span>Manajemen Video</span></a>
 			</li>
 
-			<!-- Divider -->
-			<!-- <hr class="sidebar-divider"> -->
-
-			<!-- Nav Item - Dashboard -->
-			<!-- <li class="nav-item">
+			<hr class="sidebar-divider">
+			<li class="nav-item">
 				<a class="nav-link" href="<?=base_url("index.php/replyvideodetail");?>">
 				<i class="fas fa-fw fa-folder"></i>
 				<span>Reply Video Ruang Doa</span></a>
-			</li> -->
-
-			<!-- Divider -->
-			<hr class="sidebar-divider">
+			</li>
 
 
-
-			<!-- Nav Item - Tables -->
-			<!-- <li class="nav-item">
+			<!-- <hr class="sidebar-divider">
+			<li class="nav-item">
 				<a class="nav-link" href="<?=base_url("index.php/logoutadmin");?>">
 				<i class="fas fa-fw fa-table"></i>
 				<span>Sign Out</span></a>
@@ -213,8 +205,8 @@
 								<table id="table1" class="table table-striped table-bordered" style="width:100%">
 									<thead>
 										<tr>
-											<th>Video</th>
 											<th>Nama Video</th>
+											<th>Video</th>
 											<th>View Video</th>
 											<th>Like Video</th>
 											<th>Detail</th>
@@ -255,25 +247,8 @@
 		<i class="fas fa-angle-up"></i>
 	</a>
 
-		
-	<!-- Bootstrap core JavaScript-->
-	<script src="<?=base_url("dist/vendor/jquery/jquery.min.js");?>"></script>
-	<script src="<?=base_url("dist/vendor/bootstrap/js/bootstrap.bundle.min.js");?>"></script>
 
-	<!-- Core plugin JavaScript-->
-	<script src="<?=base_url("dist/vendor/jquery-easing/jquery.easing.min.js");?>"></script>
 
-	<!-- Custom scripts for all pages-->
-	<script src="<?=base_url("dist/js/sb-admin-2.min.js");?>"></script>
-
-	<!-- Page level plugins -->
-	<script src="<?=base_url("dist/vendor/datatables/jquery.dataTables.min.js");?>"></script>
-	<script src="<?=base_url("dist/vendor/datatables/dataTables.bootstrap4.min.js");?>"></script>
-
-	<!-- Page level custom scripts -->
-	<script src="<?=base_url("dist/js/demo/datatables-demo.js");?>"></script>
-
-	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
 
 	<!-- modal add -->
 	<div class="modal fade" id="addmodal" tabindex="-1" role="dialog" aria-labelledby="editTitle" aria-hidden="true">
@@ -409,7 +384,34 @@
         <div class="loader"></div>
     </div>
 
-	
+
+
+
+		
+	<!-- Bootstrap core JavaScript-->
+	<script src="<?=base_url("dist/vendor/jquery/jquery.min.js");?>"></script>
+	<script src="<?=base_url("dist/vendor/bootstrap/js/bootstrap.bundle.min.js");?>"></script>
+
+	<!-- Core plugin JavaScript-->
+	<script src="<?=base_url("dist/vendor/jquery-easing/jquery.easing.min.js");?>"></script>
+
+	<!-- Custom scripts for all pages-->
+	<script src="<?=base_url("dist/js/sb-admin-2.min.js");?>"></script>
+
+	<!-- Page level plugins -->
+	<script src="<?=base_url("dist/vendor/datatables/jquery.dataTables.min.js");?>"></script>
+	<script src="<?=base_url("dist/vendor/datatables/dataTables.bootstrap4.min.js");?>"></script>
+
+	<!-- Page level custom scripts -->
+	<script src="<?=base_url("dist/js/demo/datatables-demo.js");?>"></script>
+
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.7/js/dataTables.responsive.min.js"></script>
+
+	<script>var $j = jQuery.noConflict(true);</script>
+
 </body>
 
 <?php $this->load->view("function_cookie");?>
@@ -496,9 +498,16 @@
 	});
 
 	$(document).ready(function () {      
-		dTable = $('#table1').DataTable({
-			responsive: true,
-            "ordering": false
+		dTable = $j('#table1').DataTable({
+			'responsive': true,
+            "ordering": false,	
+			"columns": [
+				{ "width": "20%", responsivePriority: 1 },
+				{ "width": "40%", responsivePriority: 3, targets: -1 },
+				{ "width": "12%", responsivePriority: 2 },
+				{ "width": "12%" },
+				{ "width": "25%" },
+			]
 		});
 
 		cek_mail();
@@ -550,8 +559,8 @@
 
 						if(inputkategori != '0') {
 							dTable.row.add([
-								'<video id="getvideo'+ data.id_video +'" width="400" controls src="'+ link +'" poster="'+ linkimg +'" preload="none"> </video>',
 								namavideo,
+								'<video id="getvideo'+ data.id_video +'" style="width: 100%; max-width: 100%;" controls src="'+ link +'" poster="'+ linkimg +'" preload="none"> </video>',
 								viewvideo,
 								likevideo,
 								'<button class="btn btn-outline-info mt-10 mb-10" onclick=tampildata("'+ no +'")><i class="fa fa-edit"></i> Edit</button><br>'
@@ -562,8 +571,8 @@
 						} else {
 							if(data.id_kategori == '0'){
 								dTable.row.add([
-									'<video id="getvideo'+ data.id_video +'" width="400" controls src="'+ link +'" poster="'+ linkimg +'" preload="none"> </video>',
 									namavideo,
+									'<video id="getvideo'+ data.id_video +'" style="width: 100%; max-width: 100%;" controls src="'+ link +'" poster="'+ linkimg +'" preload="none"> </video>',
 									viewvideo,
 									likevideo,
 									'<button class="btn btn-outline-info mt-10 mb-10" onclick=tampildata("'+ no +'")><i class="fa fa-edit"></i> Edit</button><br>'
